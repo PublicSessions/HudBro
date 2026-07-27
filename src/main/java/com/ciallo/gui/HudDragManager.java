@@ -33,18 +33,25 @@ public class HudDragManager {
     }
 
     private static boolean isLeftDown() {
-        long h = getWindowHandle(Minecraft.getInstance().getWindow());
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.getWindow() == null) return false;
+        long h = getWindowHandle(client.getWindow());
+        if (h == 0) return false;
         return GLFW.glfwGetMouseButton(h, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
     }
 
     private static boolean isRightDown() {
-        long h = getWindowHandle(Minecraft.getInstance().getWindow());
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.getWindow() == null) return false;
+        long h = getWindowHandle(client.getWindow());
+        if (h == 0) return false;
         return GLFW.glfwGetMouseButton(h, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
     }
 
     public void renderHoverHighlight(GuiGraphics context) {
         Minecraft client = Minecraft.getInstance();
         Window window = client.getWindow();
+        if (window == null) return;
         double scale = window.getGuiScale();
         if (scale == 0) scale = 1;
         int mouseX = (int) (client.mouseHandler.xpos() / scale);
@@ -73,6 +80,7 @@ public class HudDragManager {
         if (client.mouseHandler == null || client.player == null) return;
 
         Window window = client.getWindow();
+        if (window == null) return;
         double scale = window.getGuiScale();
         if (scale == 0) scale = 1;
         int mouseX = (int) (client.mouseHandler.xpos() / scale);
@@ -130,4 +138,3 @@ public class HudDragManager {
         context.fill(0, centerY - 1, screenWidth, centerY + 1, 0x40FFFFFF);
     }
 }
-
