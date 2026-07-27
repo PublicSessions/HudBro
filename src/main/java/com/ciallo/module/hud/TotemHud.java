@@ -61,9 +61,9 @@ public class TotemHud extends AbstractHudModule implements Listener3 {
 
         context.pose().pushPose();
         context.pose().translate((double)posX, (double)posY, 0.0);
-        context.pose().scale(scale.getFloat(), scale.getFloat());
+        context.pose().scale(scale.getFloat(), scale.getFloat(), 1.0f);
 
-        ItemStack totem = new ItemStack(Items.TOTEM_OF_UNDYING, 1.0f);
+        ItemStack totem = new ItemStack(Items.TOTEM_OF_UNDYING, 1);
         context.renderItem(totem, 0, 0);
         context.drawString(MC.client3.font, Integer.toString(count), 16, 8, color.getColor(), true);
 

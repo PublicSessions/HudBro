@@ -73,9 +73,6 @@ public class HudEditorScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        double mouseX = mouseX;
-        double mouseY = mouseY;
-        int button = button;
         if (button == 0) {
             List<AbstractHudModule> huds = new ArrayList<>(ModuleManager.INSTANCE.getHudModules());
             for (int i = huds.size() - 1; i >= 0; i--) {

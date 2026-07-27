@@ -39,13 +39,12 @@ java {
 }
 
 jar {
-	archiveFileName = "${project.archives_base_name}-${project.minecraft_version}-${project.mod_version}.jar"
+	archiveFileName = "HudBro-${project.minecraft_version}-${project.mod_version}-Fabric.jar"
 
 	from("LICENSE") {
 		rename { "${it}_${project.archives_base_name}"}
 	}
 }
-
 publishing {
 	publications {
 		create("mavenJava", MavenPublication) {
