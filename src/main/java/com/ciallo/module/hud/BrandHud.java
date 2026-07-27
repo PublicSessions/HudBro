@@ -37,12 +37,12 @@ public class BrandHud extends AbstractHudModule implements Listener3 {
 
     @Override
     public int getWidth() {
-        return Math.round(MC.client3.font.width(getText()) * scale.getFloat());
+        return Math.round(MC.getMc().font.width(getText()) * scale.getFloat());
     }
 
     @Override
     public int getHeight() {
-        return Math.round(MC.client3.font.lineHeight * scale.getFloat());
+        return Math.round(MC.getMc().font.lineHeight * scale.getFloat());
     }
 
     @Override
@@ -57,20 +57,20 @@ public class BrandHud extends AbstractHudModule implements Listener3 {
         int posY = getY();
         String text = getText();
 
-        context.pose().pushPose();
-        context.pose().translate((double)posX, (double)posY, 0.0);
-        context.pose().scale(scale.getFloat(), scale.getFloat(), 1.0f);
-        context.drawString(MC.client3.font, text, 0, 0, color.getColor(), shadow.getValue());
-        context.pose().popPose();
+        context.pose().pushMatrix();
+        context.pose().translate(posX, posY);
+        context.pose().scale(scale.getFloat(), scale.getFloat());
+        context.drawString(MC.getMc().font, text, 0, 0, color.getColor(), shadow.getValue());
+        context.pose().popMatrix();
     }
 
     private String getText() {
         String brand = "Vanilla";
         try {
-            if (!MC.client3.isSingleplayer() && MC.client3.getConnection() != null) {
+            if (!MC.getMc().isSingleplayer() && MC.getMc().getConnection() != null) {
                 try {
-                    var method = MC.client3.getConnection().getClass().getMethod("getBrand");
-                    brand = method.invoke(MC.client3.getConnection()).toString().replaceAll("\\(.*?\\)", "");
+                    var method = MC.getMc().getConnection().getClass().getMethod("getBrand");
+                    brand = method.invoke(MC.getMc().getConnection()).toString().replaceAll("\\(.*?\\)", "");
                 } catch (Exception e) {
                     brand = "Unknown";
                 }

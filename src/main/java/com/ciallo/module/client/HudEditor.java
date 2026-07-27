@@ -1,6 +1,6 @@
 package com.ciallo.module.client;
 
-import net.minecraft.client.gui.screens.Screen;
+
 import net.minecraft.network.chat.Component;
 import com.ciallo.gui.HudEditorScreen;
 import com.ciallo.module.Category;
@@ -21,7 +21,7 @@ public class HudEditor extends Module {
 
     @Override
     public void onEnable() {
-        MC.client3.setScreen(new HudEditorScreen());
+        MC.getMc().setScreen(new HudEditorScreen());
         this.setFlag3(false);
     }
 }

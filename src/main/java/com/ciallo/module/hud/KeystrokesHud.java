@@ -65,7 +65,7 @@ public class KeystrokesHud extends AbstractHudModule implements Listener3 {
 
     @Override
     public void render(GuiGraphics context, float partialTicks) {
-        if (MC.client3.player == null || MC.client3.level == null) return;
+        if (MC.getMc().player == null || MC.getMc().level == null) return;
 
         int posX = getX();
         int posY = getY();
@@ -76,8 +76,8 @@ public class KeystrokesHud extends AbstractHudModule implements Listener3 {
         int spaceWidth = (int) (58 * s);
         int spaceHeight = (int) (12 * s);
 
-        context.pose().pushPose();
-        context.pose().translate((double)posX, (double)posY, 0.0);
+        context.pose().pushMatrix();
+        context.pose().translate(posX, posY);
 
         int currentY = 0;
 
@@ -102,18 +102,18 @@ public class KeystrokesHud extends AbstractHudModule implements Listener3 {
             drawKey(context, labelSpace.getValue(), isKeyDown(GLFW.GLFW_KEY_SPACE), 0, currentY, spaceWidth, spaceHeight);
         }
 
-        context.pose().popPose();
+        context.pose().popMatrix();
     }
 
     private void drawKey(GuiGraphics context, String text, boolean pressed, int x, int y, int width, int height) {
         int color = pressed ? pressedColor.getColor() : backgroundColor.getColor();
         context.fill(x, y, x + width, y + height, color);
-        context.drawString(MC.client3.font, text, x + width / 2 - MC.client3.font.width(text) / 2, y + height / 2 - MC.client3.font.lineHeight / 2, shadow.getValue() ? 0xFF000000 : 0xFFFFFFFF, shadow.getValue());
+        context.drawString(MC.getMc().font, text, x + width / 2 - MC.getMc().font.width(text) / 2, y + height / 2 - MC.getMc().font.lineHeight / 2, shadow.getValue() ? 0xFF000000 : 0xFFFFFFFF, shadow.getValue());
     }
 
     private boolean isKeyDown(int key) {
         try {
-            var window = MC.client3.getWindow();
+            var window = MC.getMc().getWindow();
             var handleField = window.getClass().getDeclaredField("handle");
             handleField.setAccessible(true);
             long handle = (long) handleField.get(window);
@@ -125,7 +125,7 @@ public class KeystrokesHud extends AbstractHudModule implements Listener3 {
 
     private boolean isMouseDown(int button) {
         try {
-            var window = MC.client3.getWindow();
+            var window = MC.getMc().getWindow();
             var handleField = window.getClass().getDeclaredField("handle");
             handleField.setAccessible(true);
             long handle = (long) handleField.get(window);

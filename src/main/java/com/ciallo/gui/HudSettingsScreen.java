@@ -1,5 +1,8 @@
 package com.ciallo.gui;
 
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -31,6 +34,8 @@ public class HudSettingsScreen extends Screen {
 
     private int typingSettingIdx = -1;
     private String typingBuffer = "";
+    private int cursorPosition = 0;
+    private int cursorBlinkTimer = 0;
 
     private static final int PANEL_WIDTH = 220;
     private static final int SETTING_HEIGHT = 30;
@@ -44,7 +49,7 @@ public class HudSettingsScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float verticalAmount) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
         openTicks++;
         int screenWidth = context.guiWidth();
         int screenHeight = context.guiHeight();
@@ -81,7 +86,7 @@ public class HudSettingsScreen extends Screen {
         context.fill(panelX + PANEL_WIDTH - 1, panelY, panelX + PANEL_WIDTH, panelY + panelHeight, (borderAlpha << 24) | 0xFF4444);
 
         context.fill(panelX + 1, panelY + 1, panelX + PANEL_WIDTH - 1, panelY + HEADER_HEIGHT, ((int)(panelAlpha * 0.9f) << 24) | 0xDDDDDD);
-        context.drawCenteredString(MC.client3.font, Component.literal(module.getName() + " Settings"), panelX + PANEL_WIDTH / 2, panelY + 10, (int)(255 * fadeIn) << 24 | 0xFF0000);
+        context.drawCenteredString(MC.getMc().font, Component.literal(module.getName() + " Settings"), panelX + PANEL_WIDTH / 2, panelY + 10, (int)(255 * fadeIn) << 24 | 0xFF0000);
 
         int settingsY = panelY + HEADER_HEIGHT;
         int visibleHeight = panelHeight - HEADER_HEIGHT - FOOTER_HEIGHT - PADDING;
@@ -103,11 +108,11 @@ public class HudSettingsScreen extends Screen {
         }
 
         context.fill(panelX + 1, panelY + panelHeight - FOOTER_HEIGHT - 1, panelX + PANEL_WIDTH - 1, panelY + panelHeight - 1, ((int)(panelAlpha * 0.9f) << 24) | 0xDDDDDD);
-        context.drawCenteredString(MC.client3.font, Component.literal("ESC to close"), panelX + PANEL_WIDTH / 2, panelY + panelHeight - FOOTER_HEIGHT / 2 - 2, (int)(200 * fadeIn) << 24 | 0xFF0000);
+        context.drawCenteredString(MC.getMc().font, Component.literal("ESC to close"), panelX + PANEL_WIDTH / 2, panelY + panelHeight - FOOTER_HEIGHT / 2 - 2, (int)(200 * fadeIn) << 24 | 0xFF0000);
     }
 
     @Override
-    public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float verticalAmount) {
+    public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float delta) {
     }
 
     private void renderNumberSetting(GuiGraphics context, int panelX, int y, NumberSetting setting, int mouseX, int mouseY, float fadeIn, int idx) {
@@ -118,8 +123,17 @@ public class HudSettingsScreen extends Screen {
         int barWidth = width - labelWidth - valueWidth - 5;
 
         String displayValue = (typingSettingIdx == idx) ? typingBuffer : String.format("%.1f", setting.getValue());
-        context.drawString(MC.client3.font, Component.literal(setting.getName()), x, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
-        context.drawString(MC.client3.font, Component.literal(displayValue), x + width - valueWidth, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
+        context.drawString(MC.getMc().font, Component.literal(setting.getName()), x, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
+        context.drawString(MC.getMc().font, Component.literal(displayValue), x + width - valueWidth, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
+
+        if (typingSettingIdx == idx) {
+            cursorBlinkTimer++;
+            if ((cursorBlinkTimer / 12) % 2 == 0) {
+                String before = typingBuffer.substring(0, Math.min(cursorPosition, typingBuffer.length()));
+                int cx = x + width - valueWidth + MC.getMc().font.width(before);
+                context.drawString(MC.getMc().font, "|", cx, y + 8, (int)(255 * fadeIn) << 24 | 0xFFFFFFFF, true);
+            }
+        }
 
         int barX = x + labelWidth + 5;
         int barY = y + 10;
@@ -142,7 +156,7 @@ public class HudSettingsScreen extends Screen {
     private void renderColorSetting(GuiGraphics context, int panelX, int y, ColorSetting setting, int mouseX, int mouseY, float fadeIn) {
         int x = panelX + PADDING;
         int width = PANEL_WIDTH - PADDING * 2;
-        context.drawString(MC.client3.font, Component.literal(setting.getName()), x, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
+        context.drawString(MC.getMc().font, Component.literal(setting.getName()), x, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
 
         int colorBoxX = x + width - 30;
         int colorBoxY = y + 4;
@@ -159,8 +173,17 @@ public class HudSettingsScreen extends Screen {
         int valueWidth = width - 60;
 
         String displayValue = (typingSettingIdx == idx) ? typingBuffer : setting.getValue();
-        context.drawString(MC.client3.font, Component.literal(setting.getName()), x, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
-        context.drawString(MC.client3.font, Component.literal(displayValue), x + 55, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
+        context.drawString(MC.getMc().font, Component.literal(setting.getName()), x, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
+        context.drawString(MC.getMc().font, Component.literal(displayValue), x + 55, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
+
+        if (typingSettingIdx == idx) {
+            cursorBlinkTimer++;
+            if ((cursorBlinkTimer / 12) % 2 == 0) {
+                String before = typingBuffer.substring(0, Math.min(cursorPosition, typingBuffer.length()));
+                int cx = x + 55 + MC.getMc().font.width(before);
+                context.drawString(MC.getMc().font, "|", cx, y + 8, (int)(255 * fadeIn) << 24 | 0xFFFFFFFF, true);
+            }
+        }
     }
 
     private void renderBooleanSetting(GuiGraphics context, int panelX, int y, BooleanSetting setting, int mouseX, int mouseY, float fadeIn, int idx) {
@@ -168,7 +191,7 @@ public class HudSettingsScreen extends Screen {
         int width = PANEL_WIDTH - PADDING * 2;
         int boxSize = 10;
 
-        context.drawString(MC.client3.font, Component.literal(setting.getName()), x, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
+        context.drawString(MC.getMc().font, Component.literal(setting.getName()), x, y + 8, (int)(255 * fadeIn) << 24 | 0xFF0000, true);
 
         int boxX = x + width - boxSize - 30;
         int boxY = y + 8;
@@ -179,12 +202,12 @@ public class HudSettingsScreen extends Screen {
         context.fill(boxX, boxY + boxSize - 1, boxX + boxSize, boxY + boxSize, 0xFF333333);
 
         String text = setting.getValue() ? "ON" : "OFF";
-        context.drawString(MC.client3.font, Component.literal(text), boxX + boxSize + 5, y + 8, setting.getValue() ? (int)(255 * fadeIn) << 24 | 0xFF4444 : (int)(200 * fadeIn) << 24 | 0xFF4444, true);
+        context.drawString(MC.getMc().font, Component.literal(text), boxX + boxSize + 5, y + 8, setting.getValue() ? (int)(255 * fadeIn) << 24 | 0xFF4444 : (int)(200 * fadeIn) << 24 | 0xFF4444, true);
     }
 
     private boolean isMouseOverSlider(int mouseX, int mouseY, int settingIdx) {
-        int screenWidth = MC.client3.getWindow().getGuiScaledWidth();
-        int screenHeight = MC.client3.getWindow().getGuiScaledHeight();
+        int screenWidth = MC.getMc().getWindow().getGuiScaledWidth();
+        int screenHeight = MC.getMc().getWindow().getGuiScaledHeight();
         int settingsCount = module.getSettings().size();
         int contentHeight = settingsCount * SETTING_HEIGHT;
         int panelHeight = HEADER_HEIGHT + contentHeight + FOOTER_HEIGHT + PADDING * 2;
@@ -214,8 +237,8 @@ public class HudSettingsScreen extends Screen {
     }
 
     private boolean isMouseOverHeader(int mouseX, int mouseY) {
-        int screenWidth = MC.client3.getWindow().getGuiScaledWidth();
-        int screenHeight = MC.client3.getWindow().getGuiScaledHeight();
+        int screenWidth = MC.getMc().getWindow().getGuiScaledWidth();
+        int screenHeight = MC.getMc().getWindow().getGuiScaledHeight();
         int settingsCount = module.getSettings().size();
         int contentHeight = settingsCount * SETTING_HEIGHT;
         int panelHeight = HEADER_HEIGHT + contentHeight + FOOTER_HEIGHT + PADDING * 2;
@@ -235,8 +258,8 @@ public class HudSettingsScreen extends Screen {
     }
 
     private boolean isMouseOverTextSetting(int mouseX, int mouseY, int settingIdx) {
-        int screenWidth = MC.client3.getWindow().getGuiScaledWidth();
-        int screenHeight = MC.client3.getWindow().getGuiScaledHeight();
+        int screenWidth = MC.getMc().getWindow().getGuiScaledWidth();
+        int screenHeight = MC.getMc().getWindow().getGuiScaledHeight();
         int settingsCount = module.getSettings().size();
         int contentHeight = settingsCount * SETTING_HEIGHT;
         int panelHeight = HEADER_HEIGHT + contentHeight + FOOTER_HEIGHT + PADDING * 2;
@@ -262,8 +285,8 @@ public class HudSettingsScreen extends Screen {
     }
 
     private boolean isMouseOverBooleanSetting(int mouseX, int mouseY, int settingIdx) {
-        int screenWidth = MC.client3.getWindow().getGuiScaledWidth();
-        int screenHeight = MC.client3.getWindow().getGuiScaledHeight();
+        int screenWidth = MC.getMc().getWindow().getGuiScaledWidth();
+        int screenHeight = MC.getMc().getWindow().getGuiScaledHeight();
         int settingsCount = module.getSettings().size();
         int contentHeight = settingsCount * SETTING_HEIGHT;
         int panelHeight = HEADER_HEIGHT + contentHeight + FOOTER_HEIGHT + PADDING * 2;
@@ -290,8 +313,8 @@ public class HudSettingsScreen extends Screen {
     }
 
     private boolean isMouseOverColorBox(int mouseX, int mouseY, int settingIdx) {
-        int screenWidth = MC.client3.getWindow().getGuiScaledWidth();
-        int screenHeight = MC.client3.getWindow().getGuiScaledHeight();
+        int screenWidth = MC.getMc().getWindow().getGuiScaledWidth();
+        int screenHeight = MC.getMc().getWindow().getGuiScaledHeight();
         int settingsCount = module.getSettings().size();
         int contentHeight = settingsCount * SETTING_HEIGHT;
         int panelHeight = HEADER_HEIGHT + contentHeight + FOOTER_HEIGHT + PADDING * 2;
@@ -319,10 +342,10 @@ public class HudSettingsScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        double mx = mouseX;
-        double my = mouseY;
-        int button = button;
+    public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
+        double mx = event.x();
+        double my = event.y();
+        int button = event.button();
 
         if (button == 0) {
             if (isMouseOverHeader((int) mx, (int) my)) {
@@ -362,12 +385,14 @@ public class HudSettingsScreen extends Screen {
                     if (isMouseOverSlider((int) mx, (int) my, idx)) {
                         typingSettingIdx = idx;
                         typingBuffer = String.format("%.1f", num.getValue());
+                        cursorPosition = typingBuffer.length();
                         return true;
                     }
                 } else if (setting instanceof TextSetting text) {
                     if (isMouseOverTextSetting((int) mx, (int) my, idx)) {
                         typingSettingIdx = idx;
                         typingBuffer = text.getValue();
+                        cursorPosition = typingBuffer.length();
                         return true;
                     }
                 }
@@ -375,11 +400,11 @@ public class HudSettingsScreen extends Screen {
             }
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, bl);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
         if (draggingPanel) {
             panelOffsetX += (int) (mouseX - panelDragStartX);
             panelOffsetY += (int) (mouseY - panelDragStartY);
@@ -398,11 +423,11 @@ public class HudSettingsScreen extends Screen {
                 idx++;
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(event, mouseX, mouseY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (draggingPanel) {
             draggingPanel = false;
             return true;
@@ -413,24 +438,32 @@ public class HudSettingsScreen extends Screen {
             HudConfig.save();
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         if (typingSettingIdx >= 0) {
-            if (keyCode == 256) {
+
+            if (event.key() == 256) {
                 typingSettingIdx = -1;
                 typingBuffer = "";
+                cursorPosition = 0;
                 return true;
             }
-            if (keyCode == 259) {
-                if (typingBuffer.length() > 0) {
-                    typingBuffer = typingBuffer.substring(0, typingBuffer.length() - 1);
-                }
+
+            if (event.key() == 259 && cursorPosition > 0) {
+                typingBuffer = typingBuffer.substring(0, cursorPosition - 1) + typingBuffer.substring(cursorPosition);
+                cursorPosition--;
                 return true;
             }
-            if (keyCode == 257) {
+
+            if (event.key() == 261 && cursorPosition < typingBuffer.length()) {
+                typingBuffer = typingBuffer.substring(0, cursorPosition) + typingBuffer.substring(cursorPosition + 1);
+                return true;
+            }
+
+            if (event.key() == 257) {
                 int idx = 0;
                 for (Setting setting : module.getSettings()) {
                     if (idx == typingSettingIdx) {
@@ -451,78 +484,139 @@ public class HudSettingsScreen extends Screen {
                 }
                 typingSettingIdx = -1;
                 typingBuffer = "";
+                cursorPosition = 0;
                 return true;
             }
+
+            if (event.key() == 262) {
+                if (cursorPosition < typingBuffer.length()) cursorPosition++;
+                return true;
+            }
+            if (event.key() == 263) {
+                if (cursorPosition > 0) cursorPosition--;
+                return true;
+            }
+            if (event.key() == 268) {
+                cursorPosition = 0;
+                return true;
+            }
+            if (event.key() == 269) {
+                cursorPosition = typingBuffer.length();
+                return true;
+            }
+
+            if (isCtrlDown()) {
+                if (event.key() == 65) {
+                    cursorPosition = typingBuffer.length();
+                    return true;
+                }
+                if (event.key() == 67) {
+                    if (cursorPosition > 0) {
+                        MC.getMc().keyboardHandler.setClipboard(typingBuffer);
+                    }
+                    return true;
+                }
+                if (event.key() == 86) {
+                    String clip = MC.getMc().keyboardHandler.getClipboard();
+                    if (clip != null) {
+                        for (int i = 0; i < clip.length(); i++) {
+                            char c = clip.charAt(i);
+                            if (c >= 32 && c != 127) {
+                                typingBuffer = typingBuffer.substring(0, cursorPosition) + c + typingBuffer.substring(cursorPosition);
+                                cursorPosition++;
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }
+
             int idx = 0;
             for (Setting setting : module.getSettings()) {
                 if (idx == typingSettingIdx && setting instanceof TextSetting) {
-                    return super.keyPressed(keyCode, scanCode, modifiers);
+                    return super.keyPressed(event);
                 }
                 idx++;
             }
             return true;
         }
 
-        if (keyCode == 256) {
+        if (event.key() == 256) {
             Minecraft.getInstance().setScreen(null);
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
-    public boolean charTyped(net.minecraft.client.input.CharacterEvent event) {
+    public boolean charTyped(CharacterEvent event) {
         if (typingSettingIdx >= 0) {
-            char c = chr;
-            int idx = 0;
-            for (Setting setting : module.getSettings()) {
-                if (idx == typingSettingIdx) {
-                    if (setting instanceof TextSetting) {
-                        typingBuffer += c;
-                        return true;
+            char c;
+            try {
+                c = (char) event.getClass().getMethod("getCodepoint").invoke(event);
+            } catch (Exception ex) {
+                c = ' ';
+            }
+            if (c >= 32 && c != 127) {
+                int idx = 0;
+                for (Setting setting : module.getSettings()) {
+                    if (idx == typingSettingIdx) {
+                        if (setting instanceof TextSetting) {
+                            typingBuffer = typingBuffer.substring(0, cursorPosition) + c + typingBuffer.substring(cursorPosition);
+                            cursorPosition++;
+                            return true;
+                        }
+                        break;
                     }
-                    break;
+                    idx++;
                 }
-                idx++;
-            }
-            if (c >= '0' && c <= '9') {
-                typingBuffer += c;
-                return true;
-            }
-            if (c == '.') {
-                if (!typingBuffer.contains(".")) {
-                    typingBuffer += ".";
+                if (c >= '0' && c <= '9') {
+                    typingBuffer = typingBuffer.substring(0, cursorPosition) + c + typingBuffer.substring(cursorPosition);
+                    cursorPosition++;
+                    return true;
                 }
-                return true;
-            }
-            if (c == '-') {
-                if (typingBuffer.isEmpty()) {
-                    typingBuffer += "-";
+                if (c == '.') {
+                    if (!typingBuffer.contains(".") || cursorPosition == typingBuffer.length()) {
+                        typingBuffer = typingBuffer.substring(0, cursorPosition) + "." + typingBuffer.substring(cursorPosition);
+                        cursorPosition++;
+                    }
+                    return true;
                 }
-                return true;
+                if (c == '-') {
+                    if (cursorPosition == 0 && !typingBuffer.startsWith("-")) {
+                        typingBuffer = "-" + typingBuffer;
+                        cursorPosition++;
+                    }
+                    return true;
+                }
             }
             return true;
         }
-        return super.charTyped(chr, modifiers);
+        return super.charTyped(event);
     }
 
-    private char chr(net.minecraft.client.input.CharacterEvent event) {
+    private long getWindowHandle() {
         try {
-            java.lang.reflect.Field f = event.getClass().getDeclaredField("codepoint");
-            f.setAccessible(true);
-            int cp = (int) f.get(event);
-            return (char) cp;
+            Object result = MC.getMc().getWindow().getClass().getMethod("handle").invoke(MC.getMc().getWindow());
+            return (Long) result;
         } catch (Exception e) {
             return 0;
         }
     }
 
+    private boolean isCtrlDown() {
+        long window = getWindowHandle();
+        if (window == 0) return false;
+        return org.lwjgl.glfw.GLFW.glfwGetKey(window, org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL) == org.lwjgl.glfw.GLFW.GLFW_PRESS
+            || org.lwjgl.glfw.GLFW.glfwGetKey(window, org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_CONTROL) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
+    }
+
     private void applySlider(int mouseX, NumberSetting setting) {
-        int screenWidth = MC.client3.getWindow().getGuiScaledWidth();
+        int screenWidth = MC.getMc().getWindow().getGuiScaledWidth();
         int settingsCount = module.getSettings().size();
         int contentHeight = settingsCount * SETTING_HEIGHT;
         int panelHeight = HEADER_HEIGHT + contentHeight + FOOTER_HEIGHT + PADDING * 2;
         int panelX = (screenWidth - PANEL_WIDTH) / 2 + panelOffsetX;
-        int panelY = (MC.client3.getWindow().getGuiScaledHeight() - panelHeight) / 2 + panelOffsetY;
+        int panelY = (MC.getMc().getWindow().getGuiScaledHeight() - panelHeight) / 2 + panelOffsetY;
         if (panelY < 10) panelY = 10;
         if (panelX < 10) panelX = 10;
 
@@ -543,8 +637,8 @@ public class HudSettingsScreen extends Screen {
         setting.setValue(value);
     }
 
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        scrollOffset += verticalAmount * 10;
+    public boolean mouseScrolled(double x, double y, double delta) {
+        scrollOffset += delta * 10;
         if (scrollOffset < 0) scrollOffset = 0;
         if (scrollOffset > maxScroll) scrollOffset = maxScroll;
         return true;

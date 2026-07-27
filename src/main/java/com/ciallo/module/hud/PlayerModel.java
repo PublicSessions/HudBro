@@ -61,10 +61,10 @@ public class PlayerModel extends AbstractHudModule implements Listener3 {
         int scaledWidth = getWidth();
         int scaledHeight = getHeight();
 
-        if (MC.client3.player == null) {
+        if (MC.getMc().player == null) {
             if (isEditorMode()) {
                 context.fill(posX, posY, posX + scaledWidth, posY + scaledHeight, 1427445792);
-                context.drawString(MC.client3.font, "Player", posX + 4, posY + 4, -1184275, true);
+                context.drawString(MC.getMc().font, "Player", posX + 4, posY + 4, -1184275, true);
             }
             return;
         }
@@ -73,7 +73,7 @@ public class PlayerModel extends AbstractHudModule implements Listener3 {
         float pitch = 0.0f;
 
         if (emulateYaw.getValue() || emulatePitch.getValue()) {
-            float currentYaw = MC.client3.player.getYRot();
+            float currentYaw = MC.getMc().player.getYRot();
             if (!flag150) {
                 value201 = currentYaw;
                 flag150 = true;
@@ -88,7 +88,7 @@ public class PlayerModel extends AbstractHudModule implements Listener3 {
                 yaw = value165;
             }
             if (emulatePitch.getValue()) {
-                pitch = clamp(MC.client3.player.getXRot(), -30.0f, 30.0f);
+                pitch = clamp(MC.getMc().player.getXRot(), -30.0f, 30.0f);
             }
         }
 
@@ -97,7 +97,7 @@ public class PlayerModel extends AbstractHudModule implements Listener3 {
         float cy = (float)(posY + posY + scaledHeight) / 2.0f;
         float ex = cx - (float)Math.tan((double)(yaw / 20.0f)) * 40.0f;
         float ey = cy - (float)Math.tan((double)(-pitch / 20.0f)) * 40.0f;
-        InventoryScreen.renderEntityInInventoryFollowsMouse(context, posX, posY, posX + scaledWidth, posY + scaledHeight, size, 0.0f, ex, ey, MC.client3.player);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(context, posX, posY, posX + scaledWidth, posY + scaledHeight, size, 0.0f, ex, ey, MC.getMc().player);
     }
 
     private float wrapDegrees(float value) {

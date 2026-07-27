@@ -57,14 +57,14 @@ public class InventoryViewer extends AbstractHudModule implements Listener3 {
         int posX = getX();
         int posY = getY();
 
-        context.pose().pushPose();
-        context.pose().translate((double)posX, (double)posY, 0.0);
+        context.pose().pushMatrix();
+        context.pose().translate(posX, posY);
         context.pose().scale(scale.getFloat(), scale.getFloat());
 
         boolean editorMode = isEditorMode();
         boolean showBackground = background.getValue();
 
-        if (!editorMode && showBackground, 1.0f) {
+        if (!editorMode && showBackground) {
             context.fill(0, 0, getWidth(), getHeight(), backgroundColor.getColor());
         }
 
@@ -77,26 +77,26 @@ public class InventoryViewer extends AbstractHudModule implements Listener3 {
             context.fill(getWidth() - 1, 0, getWidth(), getHeight(), borderColorVal);
         }
 
-        if (MC.client3.player == null) {
+        if (MC.getMc().player == null) {
             if (editorMode) {
-                context.drawString(MC.client3.font, "Inventory", 4, 4, -1184275, true);
+                context.drawString(MC.getMc().font, "Inventory", 4, 4, -1184275, true);
             }
-            context.pose().popPose();
+            context.pose().popMatrix();
             return;
         }
 
         for (int i = 9; i < 36; i++) {
-            ItemStack item = MC.client3.player.getInventory().getItem(i);
+            ItemStack item = MC.getMc().player.getInventory().getItem(i);
             int slotIndex = i - 9;
             int slotX = 1 + slotIndex % 9 * 18;
             int slotY = 1 + slotIndex / 9 * 18;
             if (!item.isEmpty()) {
                 context.renderItem(item, slotX, slotY);
-                context.renderItemDecorations(MC.client3.font, item, slotX, slotY, null);
+                context.renderItemDecorations(MC.getMc().font, item, slotX, slotY, null);
             }
         }
 
-        context.pose().popPose();
+        context.pose().popMatrix();
     }
 }
 

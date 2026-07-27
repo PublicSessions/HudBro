@@ -46,6 +46,13 @@ jar {
 	}
 }
 
+sourcesJar {
+	archiveFileName = "HudBro-${project.minecraft_version}-Fabric-sources.jar"
+}
+
+remapJar {
+	destinationDirectory.set(layout.buildDirectory.dir("libs"))
+}
 
 publishing {
 	publications {

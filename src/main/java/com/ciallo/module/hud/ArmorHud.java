@@ -54,34 +54,34 @@ public class ArmorHud extends AbstractHudModule implements Listener3 {
         int posX = getX();
         int posY = getY();
 
-        context.pose().pushPose();
-        context.pose().translate((double)posX, (double)posY, 0.0);
+        context.pose().pushMatrix();
+        context.pose().translate(posX, posY);
         context.pose().scale(scale.getFloat(), scale.getFloat());
 
-        if (MC.client3.player == null) {
-            if (isEditorMode(), 1.0f) {
+        if (MC.getMc().player == null) {
+            if (isEditorMode()) {
                 context.fill(0, 0, getWidth(), getHeight(), 1427445792);
-                context.drawString(MC.client3.font, "Armor HUD", 4, 2, -1184275, shadow.getValue());
+                context.drawString(MC.getMc().font, "Armor HUD", 4, 2, -1184275, shadow.getValue());
             }
-            context.pose().popPose();
+            context.pose().popMatrix();
             return;
         }
 
         int itemX = 0;
         for (int i = 3; i >= 0; i--) {
-            ItemStack item = MC.client3.player.getInventory().getItem(36 + i);
+            ItemStack item = MC.getMc().player.getInventory().getItem(36 + i);
             if (!item.isEmpty()) {
                 context.renderItem(item, itemX + 2, 0);
-                context.renderItemDecorations(MC.client3.font, item, itemX + 2, 0, null);
+                context.renderItemDecorations(MC.getMc().font, item, itemX + 2, 0, null);
                 if (durability.getValue() && item.getMaxDamage() > 0) {
                     int maxDamage = item.getMaxDamage();
                     int damage = item.getDamageValue();
                     int percent = (int) ((float) (maxDamage - damage) / maxDamage * 100.0f);
                     int color = getDurabilityColor(percent);
                     String text = percent + "%";
-                    int textWidth = MC.client3.font.width(text);
+                    int textWidth = MC.getMc().font.width(text);
                     int textX = itemX + 10 - textWidth / 2;
-                    context.drawString(MC.client3.font, text, textX, 18, color, shadow.getValue());
+                    context.drawString(MC.getMc().font, text, textX, 18, color, shadow.getValue());
                 }
             } else if (isEditorMode()) {
                 context.fill(itemX + 2, 0, itemX + 18, 16, 0x22FFFFFF);
@@ -89,7 +89,7 @@ public class ArmorHud extends AbstractHudModule implements Listener3 {
             itemX += 20;
         }
 
-        context.pose().popPose();
+        context.pose().popMatrix();
     }
 
     private int getDurabilityColor(int percent) {

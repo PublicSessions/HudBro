@@ -53,27 +53,27 @@ public class CoordsHud extends AbstractHudModule implements Listener3 {
 
     @Override
     public void render(GuiGraphics context, float partialTicks) {
-        if (MC.client3.player == null) {
+        if (MC.getMc().player == null) {
             return;
         }
 
         int posX = getX();
         int posY = getY();
 
-        context.pose().pushPose();
-        context.pose().translate((double)posX, (double)posY, 0.0);
+        context.pose().pushMatrix();
+        context.pose().translate(posX, posY);
         context.pose().scale(scale.getFloat(), scale.getFloat());
 
-        double px = MC.client3.player.getX();
-        double py = MC.client3.player.getY();
-        double pz = MC.client3.player.getZ();
-        String template = format.getValue(, 1.0f);
+        double px = MC.getMc().player.getX();
+        double py = MC.getMc().player.getY();
+        double pz = MC.getMc().player.getZ();
+        String template = format.getValue();
         String text = template.replace("{x}", String.format("%.1f", px)).replace("{y}", String.format("%.1f", py)).replace("{z}", String.format("%.1f", pz));
-        context.drawString(MC.client3.font, text, 0, 0, color.getColor(), true);
-        lastWidth = Math.round(MC.client3.font.width(text) * scale.getFloat() + 1);
+        context.drawString(MC.getMc().font, text, 0, 0, color.getColor(), true);
+        lastWidth = Math.round(MC.getMc().font.width(text) * scale.getFloat() + 1);
         lastHeight = Math.round(9.0f * scale.getFloat());
 
-        context.pose().popPose();
+        context.pose().popMatrix();
     }
 }
 

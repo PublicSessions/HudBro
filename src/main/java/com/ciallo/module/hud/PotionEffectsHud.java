@@ -46,7 +46,7 @@ public class PotionEffectsHud extends AbstractHudModule implements Listener3 {
 
     @Override
     public int getHeight() {
-        return Math.round(MC.client3.font.lineHeight * scale.getFloat() * 5);
+        return Math.round(MC.getMc().font.lineHeight * scale.getFloat() * 5);
     }
 
     @Override
@@ -57,18 +57,18 @@ public class PotionEffectsHud extends AbstractHudModule implements Listener3 {
 
     @Override
     public void render(GuiGraphics context, float partialTicks) {
-        if (MC.client3.player == null) return;
+        if (MC.getMc().player == null) return;
 
         int posX = getX();
         int posY = getY();
         float s = scale.getFloat();
-        Collection<MobEffectInstance> effects = MC.client3.player.getActiveEffects();
-        int textHeight = (int) (MC.client3.font.lineHeight * s);
+        Collection<MobEffectInstance> effects = MC.getMc().player.getActiveEffects();
+        int textHeight = (int) (MC.getMc().font.lineHeight * s);
         int rowHeight = textHeight + (int) (2 * s);
         int rowWidth = (int) (120 * s);
 
-        context.pose().pushPose();
-        context.pose().translate((double)posX, (double)posY, 0.0);
+        context.pose().pushMatrix();
+        context.pose().translate(posX, posY);
 
         int currentY = 0;
         for (MobEffectInstance effect : effects) {
@@ -81,12 +81,12 @@ public class PotionEffectsHud extends AbstractHudModule implements Listener3 {
 
             String name = effect.getEffect().value().getDisplayName().getString();
             String duration = formatDuration(effect.getDuration());
-            context.drawString(MC.client3.font, name + " " + duration, (int) (2 * s), currentY + (int) (1 * s), txtColor, shadow.getValue());
+            context.drawString(MC.getMc().font, name + " " + duration, (int) (2 * s), currentY + (int) (1 * s), txtColor, shadow.getValue());
 
             currentY += rowHeight;
         }
 
-        context.pose().popPose();
+        context.pose().popMatrix();
     }
 
     private String formatDuration(int ticks) {

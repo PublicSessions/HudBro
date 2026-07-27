@@ -1,6 +1,6 @@
 package com.ciallo;
 
-import net.fabricmc.api.ModInitializer;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.DeltaTracker;
@@ -28,12 +28,18 @@ import com.ciallo.module.hud.TimeHud;
 import com.ciallo.module.hud.TPSHud;
 import com.ciallo.module.hud.TotemHud;
 
-public class HudBro implements ModInitializer {
+public class HudBro implements ClientModInitializer {
     public static final String MOD_ID = "hudbro";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     @Override
-    public void onInitialize() {
+    public void onInitializeClient() {
+        try {
+            Class.forName("net.minecraft.client.gui.screens.Screen");
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Failed to pre-load Screen class", e);
+        }
+
         ModuleManager manager = ModuleManager.INSTANCE;
 
         manager.register(new HudEditor());

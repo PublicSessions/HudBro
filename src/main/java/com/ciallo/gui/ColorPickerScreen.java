@@ -1,5 +1,8 @@
 package com.ciallo.gui;
 
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -28,7 +31,7 @@ public class ColorPickerScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float verticalAmount) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
         int screenWidth = context.guiWidth();
         int screenHeight = context.guiHeight();
         int x = (screenWidth - WIDTH) / 2;
@@ -102,25 +105,25 @@ public class ColorPickerScreen extends Screen {
         context.fill(x + PADDING, y + 8, x + 35, y + 9, 0xFFFFFFFF);
         context.fill(x + PADDING, y + 19, x + 35, y + 20, 0xFF333333);
 
-        context.drawString(MC.client3.font, Component.literal("R:" + r), x + 40, y + 8, 0xFFFF0000, true);
-        context.drawString(MC.client3.font, Component.literal("G:" + g), x + 80, y + 8, 0xFF00FF00, true);
-        context.drawString(MC.client3.font, Component.literal("B:" + b), x + 120, y + 8, 0xFF0000FF, true);
-        context.drawString(MC.client3.font, Component.literal("A:" + a), x + 160, y + 8, 0xFFFFFFFF, true);
+        context.drawString(MC.getMc().font, Component.literal("R:" + r), x + 40, y + 8, 0xFFFF0000, true);
+        context.drawString(MC.getMc().font, Component.literal("G:" + g), x + 80, y + 8, 0xFF00FF00, true);
+        context.drawString(MC.getMc().font, Component.literal("B:" + b), x + 120, y + 8, 0xFF0000FF, true);
+        context.drawString(MC.getMc().font, Component.literal("A:" + a), x + 160, y + 8, 0xFFFFFFFF, true);
 
-        context.drawCenteredString(MC.client3.font, Component.literal("ESC: cancel | ENTER: apply"), x + WIDTH / 2, y + HEIGHT - 12, 0xFF888888);
+        context.drawCenteredString(MC.getMc().font, Component.literal("ESC: cancel | ENTER: apply"), x + WIDTH / 2, y + HEIGHT - 12, 0xFF888888);
 
-        super.render(context, mouseX, mouseY, verticalAmount);
+        super.render(context, mouseX, mouseY, delta);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        double mx = mouseX;
-        double my = mouseY;
-        int button = button;
+    public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
+        double mx = event.x();
+        double my = event.y();
+        int button = event.button();
 
         if (button == 0) {
-            int screenWidth = MC.client3.getWindow().getGuiScaledWidth();
-            int screenHeight = MC.client3.getWindow().getGuiScaledHeight();
+            int screenWidth = MC.getMc().getWindow().getGuiScaledWidth();
+            int screenHeight = MC.getMc().getWindow().getGuiScaledHeight();
             int x = (screenWidth - WIDTH) / 2;
             int y = (screenHeight - HEIGHT) / 2;
             if (y < 10) y = 10;
@@ -157,13 +160,13 @@ public class ColorPickerScreen extends Screen {
             }
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, bl);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        int screenWidth = MC.client3.getWindow().getGuiScaledWidth();
-        int screenHeight = MC.client3.getWindow().getGuiScaledHeight();
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        int screenWidth = MC.getMc().getWindow().getGuiScaledWidth();
+        int screenHeight = MC.getMc().getWindow().getGuiScaledHeight();
         int x = (screenWidth - WIDTH) / 2;
         int y = (screenHeight - HEIGHT) / 2;
         if (y < 10) y = 10;
@@ -189,11 +192,11 @@ public class ColorPickerScreen extends Screen {
             updateAlpha((int) mouseX, alphaX, alphaWidth);
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(event, mouseX, mouseY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (draggingSv || draggingHue || draggingAlpha) {
             draggingSv = false;
             draggingHue = false;
@@ -202,22 +205,22 @@ public class ColorPickerScreen extends Screen {
             HudConfig.save();
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == 256) {
             Minecraft.getInstance().setScreen(null);
             return true;
         }
-        if (keyCode == 257) {
+        if (event.key() == 257) {
             setting.setColor(currentColor);
             HudConfig.save();
             Minecraft.getInstance().setScreen(null);
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     private void updateSv(int mouseX, int mouseY, int svX, int svY, int svWidth, int svHeight) {
@@ -254,11 +257,11 @@ public class ColorPickerScreen extends Screen {
         float max = Math.max(rf, Math.max(gf, bf));
         float min = Math.min(rf, Math.min(gf, bf));
         if (max == min) return 0.0f;
-        float verticalAmount = max - min;
+        float delta = max - min;
         float hue;
-        if (max == rf) hue = ((gf - bf) / verticalAmount) % 6.0f;
-        else if (max == gf) hue = (bf - rf) / verticalAmount + 2.0f;
-        else hue = (rf - gf) / verticalAmount + 4.0f;
+        if (max == rf) hue = ((gf - bf) / delta) % 6.0f;
+        else if (max == gf) hue = (bf - rf) / delta + 2.0f;
+        else hue = (rf - gf) / delta + 4.0f;
         hue *= 60.0f;
         if (hue < 0.0f) hue += 360.0f;
         return hue;

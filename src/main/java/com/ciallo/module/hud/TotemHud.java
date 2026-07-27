@@ -51,7 +51,7 @@ public class TotemHud extends AbstractHudModule implements Listener3 {
 
     @Override
     public void render(GuiGraphics context, float partialTicks) {
-        if (MC.client3.player == null) {
+        if (MC.getMc().player == null) {
             return;
         }
 
@@ -59,31 +59,31 @@ public class TotemHud extends AbstractHudModule implements Listener3 {
         int posY = getY();
         int count = getTotemCount();
 
-        context.pose().pushPose();
-        context.pose().translate((double)posX, (double)posY, 0.0);
+        context.pose().pushMatrix();
+        context.pose().translate(posX, posY);
         context.pose().scale(scale.getFloat(), scale.getFloat());
 
-        ItemStack totem = new ItemStack(Items.TOTEM_OF_UNDYING, 1.0f);
+        ItemStack totem = new ItemStack(Items.TOTEM_OF_UNDYING, 1);
         context.renderItem(totem, 0, 0);
-        context.drawString(MC.client3.font, Integer.toString(count), 16, 8, color.getColor(), true);
+        context.drawString(MC.getMc().font, Integer.toString(count), 16, 8, color.getColor(), true);
 
-        context.pose().popPose();
+        context.pose().popMatrix();
     }
 
     private int getTotemCount() {
-        if (MC.client3.player == null) {
+        if (MC.getMc().player == null) {
             return 0;
         }
 
         int count = 0;
         for (int i = 0; i < 36; i++) {
-            ItemStack stack = MC.client3.player.getInventory().getItem(i);
+            ItemStack stack = MC.getMc().player.getInventory().getItem(i);
             if (stack.is(Items.TOTEM_OF_UNDYING)) {
                 count += stack.getCount();
             }
         }
 
-        ItemStack offHand = MC.client3.player.getOffhandItem();
+        ItemStack offHand = MC.getMc().player.getOffhandItem();
         if (offHand.is(Items.TOTEM_OF_UNDYING)) {
             count += offHand.getCount();
         }

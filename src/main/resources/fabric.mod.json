@@ -12,9 +12,9 @@
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/hudbro/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
+		"client": [
 			"com.ciallo.HudBro"
 		]
 	},
