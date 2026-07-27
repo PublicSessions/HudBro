@@ -27,29 +27,29 @@ public class HudDragManager {
         return INSTANCE;
     }
 
-    private static long getWindowHandle(Window w) {
-        try { return (long) w.getClass().getMethod("handle").invoke(w); }
-        catch (Exception e) { try { return (long) w.getClass().getMethod("getHandle").invoke(w); } catch (Exception e2) { return 0; } }
-    }
-
     private static boolean isLeftDown() {
         Minecraft client = Minecraft.getInstance();
-        if (client == null || client.getWindow() == null) return false;
-        long h = getWindowHandle(client.getWindow());
-        if (h == 0) return false;
+        if (client == null) return false;
+        long h = GLFW.glfwGetCurrentContext();
+        if (h == 0) {
+            return client.mouseHandler != null && client.mouseHandler.isLeftPressed();
+        }
         return GLFW.glfwGetMouseButton(h, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
     }
 
     private static boolean isRightDown() {
         Minecraft client = Minecraft.getInstance();
-        if (client == null || client.getWindow() == null) return false;
-        long h = getWindowHandle(client.getWindow());
-        if (h == 0) return false;
+        if (client == null) return false;
+        long h = GLFW.glfwGetCurrentContext();
+        if (h == 0) {
+            return client.mouseHandler != null && client.mouseHandler.isRightPressed();
+        }
         return GLFW.glfwGetMouseButton(h, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
     }
 
     public void renderHoverHighlight(GuiGraphics context) {
         Minecraft client = Minecraft.getInstance();
+        if (client.mouseHandler == null) return;
         Window window = client.getWindow();
         if (window == null) return;
         double scale = window.getGuiScale();
@@ -138,4 +138,3 @@ public class HudDragManager {
         context.fill(0, centerY - 1, screenWidth, centerY + 1, 0x40FFFFFF);
     }
 }
-
