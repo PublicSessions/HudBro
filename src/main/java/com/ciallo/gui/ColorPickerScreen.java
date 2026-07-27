@@ -116,7 +116,7 @@ public class ColorPickerScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         double mx = mouseX;
         double my = mouseY;
-        int button = button;
+        
 
         if (button == 0) {
             int screenWidth = MC.client3.getWindow().getGuiScaledWidth();

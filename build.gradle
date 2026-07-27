@@ -39,11 +39,19 @@ java {
 }
 
 jar {
-	archiveFileName = "${project.archives_base_name}-${project.minecraft_version}-${project.mod_version}.jar"
+	archiveFileName = "HudBro-${project.minecraft_version}-Fabric.jar"
 
 	from("LICENSE") {
 		rename { "${it}_${project.archives_base_name}"}
 	}
+}
+
+sourcesJar {
+	archiveFileName = "HudBro-${project.minecraft_version}-Fabric-sources.jar"
+}
+
+remapJar {
+	destinationDirectory.set(layout.buildDirectory.dir("libs"))
 }
 
 publishing {

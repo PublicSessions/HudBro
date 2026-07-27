@@ -59,12 +59,12 @@ public class InventoryViewer extends AbstractHudModule implements Listener3 {
 
         context.pose().pushPose();
         context.pose().translate((double)posX, (double)posY, 0.0);
-        context.pose().scale(scale.getFloat(), scale.getFloat());
+        context.pose().scale(scale.getFloat(), scale.getFloat(), 1.0f);
 
         boolean editorMode = isEditorMode();
         boolean showBackground = background.getValue();
 
-        if (!editorMode && showBackground, 1.0f) {
+        if (!editorMode && showBackground) {
             context.fill(0, 0, getWidth(), getHeight(), backgroundColor.getColor());
         }
 

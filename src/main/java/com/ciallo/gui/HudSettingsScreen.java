@@ -322,7 +322,7 @@ public class HudSettingsScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         double mx = mouseX;
         double my = mouseY;
-        int button = button;
+        
 
         if (button == 0) {
             if (isMouseOverHeader((int) mx, (int) my)) {
@@ -470,7 +470,7 @@ public class HudSettingsScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    public boolean charTyped(net.minecraft.client.input.CharacterEvent event) {
+    public boolean charTyped(char chr, int modifiers) {
         if (typingSettingIdx >= 0) {
             char c = chr;
             int idx = 0;
@@ -503,17 +503,6 @@ public class HudSettingsScreen extends Screen {
             return true;
         }
         return super.charTyped(chr, modifiers);
-    }
-
-    private char chr(net.minecraft.client.input.CharacterEvent event) {
-        try {
-            java.lang.reflect.Field f = event.getClass().getDeclaredField("codepoint");
-            f.setAccessible(true);
-            int cp = (int) f.get(event);
-            return (char) cp;
-        } catch (Exception e) {
-            return 0;
-        }
     }
 
     private void applySlider(int mouseX, NumberSetting setting) {
