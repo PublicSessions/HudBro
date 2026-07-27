@@ -62,12 +62,12 @@ public class CoordsHud extends AbstractHudModule implements Listener3 {
 
         context.pose().pushPose();
         context.pose().translate((double)posX, (double)posY, 0.0);
-        context.pose().scale(scale.getFloat(), scale.getFloat(), 1.0f);
+        context.pose().scale(scale.getFloat(), scale.getFloat());
 
         double px = MC.client3.player.getX();
         double py = MC.client3.player.getY();
         double pz = MC.client3.player.getZ();
-        String template = format.getValue();
+        String template = format.getValue(, 1.0f);
         String text = template.replace("{x}", String.format("%.1f", px)).replace("{y}", String.format("%.1f", py)).replace("{z}", String.format("%.1f", pz));
         context.drawString(MC.client3.font, text, 0, 0, color.getColor(), true);
         lastWidth = Math.round(MC.client3.font.width(text) * scale.getFloat() + 1);

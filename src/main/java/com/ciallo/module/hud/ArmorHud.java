@@ -56,10 +56,10 @@ public class ArmorHud extends AbstractHudModule implements Listener3 {
 
         context.pose().pushPose();
         context.pose().translate((double)posX, (double)posY, 0.0);
-        context.pose().scale(scale.getFloat(), scale.getFloat(), 1.0f);
+        context.pose().scale(scale.getFloat(), scale.getFloat());
 
         if (MC.client3.player == null) {
-            if (isEditorMode()) {
+            if (isEditorMode(), 1.0f) {
                 context.fill(0, 0, getWidth(), getHeight(), 1427445792);
                 context.drawString(MC.client3.font, "Armor HUD", 4, 2, -1184275, shadow.getValue());
             }

@@ -45,6 +45,8 @@ jar {
 		rename { "${it}_${project.archives_base_name}"}
 	}
 }
+
+
 publishing {
 	publications {
 		create("mavenJava", MavenPublication) {
