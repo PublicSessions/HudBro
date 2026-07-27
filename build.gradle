@@ -39,7 +39,7 @@ java {
 }
 
 jar {
-	archiveFileName = "HudBro-${project.minecraft_version}-Fabric.jar"
+	archiveFileName = "HudBro-${project.minecraft_version}-${project.mod_version}-Fabric.jar"
 
 	from("LICENSE") {
 		rename { "${it}_${project.archives_base_name}"}
