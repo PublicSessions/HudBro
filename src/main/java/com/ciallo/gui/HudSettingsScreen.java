@@ -110,6 +110,7 @@ public class HudSettingsScreen extends Screen {
 
     @Override
     public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float verticalAmount) {
+        context.fill(0, 0, context.guiWidth(), context.guiHeight(), 0x11000000);
     }
 
     private void renderNumberSetting(GuiGraphics context, int panelX, int y, NumberSetting setting, int mouseX, int mouseY, float fadeIn, int idx) {

@@ -33,8 +33,9 @@ public class KeystrokesHud extends AbstractHudModule implements Listener3 {
 
     public KeystrokesHud() {
         super("Keystrokes", "Shows pressed keys.", Category.HUD);
-        this.setChinese("????");
-        this.setChineseDescription("??????");
+        this.setFlag3(true);
+        this.setChinese("按键显示");
+        this.setChineseDescription("显示 WASD、鼠标和空格键的按下状态");
     }
 
     @Override
@@ -112,27 +113,15 @@ public class KeystrokesHud extends AbstractHudModule implements Listener3 {
     }
 
     private boolean isKeyDown(int key) {
-        try {
-            var window = MC.client3.getWindow();
-            var handleField = window.getClass().getDeclaredField("handle");
-            handleField.setAccessible(true);
-            long handle = (long) handleField.get(window);
-            return org.lwjgl.glfw.GLFW.glfwGetKey(handle, key) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-        } catch (Exception e) {
-            return false;
-        }
+        long handle = org.lwjgl.glfw.GLFW.glfwGetCurrentContext();
+        if (handle == 0) return false;
+        return org.lwjgl.glfw.GLFW.glfwGetKey(handle, key) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
     }
 
     private boolean isMouseDown(int button) {
-        try {
-            var window = MC.client3.getWindow();
-            var handleField = window.getClass().getDeclaredField("handle");
-            handleField.setAccessible(true);
-            long handle = (long) handleField.get(window);
-            return org.lwjgl.glfw.GLFW.glfwGetMouseButton(handle, button) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
-        } catch (Exception e) {
-            return false;
-        }
+        long handle = org.lwjgl.glfw.GLFW.glfwGetCurrentContext();
+        if (handle == 0) return false;
+        return org.lwjgl.glfw.GLFW.glfwGetMouseButton(handle, button) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
     }
 }
 

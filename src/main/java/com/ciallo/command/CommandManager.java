@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import com.ciallo.module.hud.AbstractHudModule;
 import com.ciallo.module.ModuleManager;
 import com.ciallo.gui.HudSettingsScreen;
+import com.ciallo.HudBro;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -35,21 +36,21 @@ public class CommandManager {
                         return 1;
                     })
                     .then(ClientCommandManager.literal("setting")
-                        .executes(context -> {
-                            String moduleName = StringArgumentType.getString(context, "module");
-                            var module = ModuleManager.INSTANCE.getModuleByName(moduleName);
-                            if (module == null) {
-                                sendFeedback("Module not found: " + moduleName);
-                                return 0;
-                            }
-                            if (module instanceof AbstractHudModule hud) {
-                                Minecraft.getInstance().setScreen(new HudSettingsScreen(hud));
-                                sendFeedback("Opened settings for " + hud.getName());
-                            } else {
-                                sendFeedback(module.getName() + " is not a HUD module");
-                            }
-                            return 1;
-                        })
+                            .executes(context -> {
+                                String moduleName = StringArgumentType.getString(context, "module");
+                                var module = ModuleManager.INSTANCE.getModuleByName(moduleName);
+                                if (module == null) {
+                                    sendFeedback("Module not found: " + moduleName);
+                                    return 0;
+                                }
+                                if (module instanceof AbstractHudModule hud) {
+                                    HudBro.openSettingsScreen(hud);
+                                    sendFeedback("Opened settings for " + hud.getName());
+                                } else {
+                                    sendFeedback(module.getName() + " is not a HUD module");
+                                }
+                                return 1;
+                            })
                     )
                 )
             );
