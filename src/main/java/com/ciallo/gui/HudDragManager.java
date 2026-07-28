@@ -3,6 +3,7 @@ package com.ciallo.gui;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.ChatScreen;
 import com.ciallo.module.hud.AbstractHudModule;
 import com.ciallo.module.ModuleManager;
 import com.ciallo.gui.HudSettingsScreen;
@@ -47,9 +48,13 @@ public class HudDragManager {
         return GLFW.glfwGetMouseButton(h, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
     }
 
+    private boolean isScreenAllowed() {
+        return Minecraft.getInstance().screen == null || Minecraft.getInstance().screen instanceof ChatScreen;
+    }
+
     public void renderHoverHighlight(GuiGraphics context) {
         Minecraft client = Minecraft.getInstance();
-        if (client.mouseHandler == null) return;
+        if (client.mouseHandler == null || !isScreenAllowed()) return;
         Window window = client.getWindow();
         if (window == null) return;
         double scale = window.getGuiScale();
@@ -77,7 +82,7 @@ public class HudDragManager {
 
     public void update() {
         Minecraft client = Minecraft.getInstance();
-        if (client.mouseHandler == null || client.player == null) return;
+        if (client.mouseHandler == null || client.player == null || !isScreenAllowed()) return;
 
         Window window = client.getWindow();
         if (window == null) return;
