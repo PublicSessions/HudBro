@@ -47,7 +47,7 @@ jar {
 }
 
 sourcesJar {
-	archiveFileName = "HudBro-${project.minecraft_version}-Fabric-sources.jar"
+	archiveFileName = "HudBro-${project.minecraft_version}-${project.mod_version}-Fabric-sources.jar"
 }
 
 remapJar {

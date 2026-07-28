@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.ciallo.command.CommandManager;
 import com.ciallo.config.HudConfig;
 import com.ciallo.gui.HudDragManager;
+import com.ciallo.gui.HudSettingsScreen;
 import com.ciallo.module.ModuleManager;
 import com.ciallo.module.client.HudEditor;
 import com.ciallo.module.hud.AbstractHudModule;
@@ -31,6 +32,11 @@ import com.ciallo.module.hud.TotemHud;
 public class HudBro implements ModInitializer {
     public static final String MOD_ID = "hudbro";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    private static AbstractHudModule pendingSettingsModule = null;
+
+    public static void openSettingsScreen(AbstractHudModule hud) {
+        pendingSettingsModule = hud;
+    }
 
     @Override
     public void onInitialize() {
@@ -57,6 +63,10 @@ public class HudBro implements ModInitializer {
         CommandManager.registerCommands();
 
         HudRenderCallback.EVENT.register((context, deltaTracker) -> {
+            if (pendingSettingsModule != null) {
+                Minecraft.getInstance().setScreen(new HudSettingsScreen(pendingSettingsModule));
+                pendingSettingsModule = null;
+            }
             for (AbstractHudModule hud : manager.getHudModules()) {
                 if (hud.isEnabled()) {
                     hud.render(context, deltaTracker.getGameTimeDeltaTicks());
