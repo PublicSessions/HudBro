@@ -52,6 +52,11 @@ sourcesJar {
 
 remapJar {
 	destinationDirectory.set(layout.buildDirectory.dir("libs"))
+	archiveFileName = "HudBro-${project.minecraft_version}-${project.mod_version}-Fabric.jar"
+}
+
+remapSourcesJar {
+	archiveFileName = "HudBro-${project.minecraft_version}-${project.mod_version}-Fabric-sources.jar"
 }
 
 publishing {
