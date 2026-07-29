@@ -49,7 +49,7 @@ public class HudDragManager {
     }
 
     private boolean isScreenAllowed() {
-        return Minecraft.getInstance().screen == null || Minecraft.getInstance().screen instanceof ChatScreen;
+        return Minecraft.getInstance().screen instanceof ChatScreen;
     }
 
     public void renderHoverHighlight(GuiGraphics context) {
