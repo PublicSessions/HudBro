@@ -21,6 +21,7 @@ import com.ciallo.module.hud.FPS;
 import com.ciallo.module.hud.IPHud;
 import com.ciallo.module.hud.InventoryViewer;
 import com.ciallo.module.hud.KeystrokesHud;
+import com.ciallo.module.hud.MovementHud;
 import com.ciallo.module.hud.Ping;
 import com.ciallo.module.hud.PlayerModel;
 import com.ciallo.module.hud.PotionEffectsHud;
@@ -63,6 +64,7 @@ public class HudBro implements ClientModInitializer {
         manager.register(new BrandHud());
         manager.register(new KeystrokesHud());
         manager.register(new PotionEffectsHud());
+        manager.register(new MovementHud());
 
         HudConfig.load();
 

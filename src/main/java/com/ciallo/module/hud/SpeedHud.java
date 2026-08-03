@@ -19,9 +19,7 @@ public class SpeedHud extends AbstractHudModule implements Listener3 {
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
     private final TextSetting format = (TextSetting) this.m28(new TextSetting("Format", "Speed : {Speed}", "Display format"));
 
-    private double lastX = 0.0;
-    private double lastZ = 0.0;
-    private long lastTime = System.currentTimeMillis();
+    private double smoothSpeed = 0.0;
 
     public SpeedHud() {
         super("Speed", "Shows movement speed.", Category.HUD);
@@ -72,19 +70,14 @@ public class SpeedHud extends AbstractHudModule implements Listener3 {
         double speed = 0.0;
         try {
             if (MC.getMc().player != null) {
-                double x = MC.getMc().player.getX();
-                double z = MC.getMc().player.getZ();
-                long now = System.currentTimeMillis();
-                double dt = (now - lastTime) / 1000.0;
-                if (dt > 0.001) {
-                    double dx = x - lastX;
-                    double dz = z - lastZ;
-                    double dist = Math.sqrt(dx * dx + dz * dz);
-                    speed = (dist / dt) * 3.6;
-                }
-                lastX = x;
-                lastZ = z;
-                lastTime = now;
+                double dx = MC.getMc().player.getDeltaMovement().x;
+                double dz = MC.getMc().player.getDeltaMovement().z;
+                double instant = Math.sqrt(dx * dx + dz * dz) * 20.0 * 3.6;
+                speed = smoothSpeed * 0.7 + instant * 0.3;
+                smoothSpeed = speed;
+            } else {
+                smoothSpeed = 0.0;
+                speed = 0.0;
             }
         } catch (Exception e) {
             speed = 0.0;

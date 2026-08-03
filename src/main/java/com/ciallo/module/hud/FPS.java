@@ -67,27 +67,9 @@ public class FPS extends AbstractHudModule implements Listener3 {
     private String getText() {
         int fps = 0;
         try {
-            java.lang.reflect.Method m = MC.getMc().getClass().getMethod("getFps");
-            fps = (Integer) m.invoke(MC.getMc());
+            fps = MC.getMc().getFps();
         } catch (Exception e) {
-            try {
-                java.lang.reflect.Method m = MC.getMc().getClass().getMethod("getCurrentFps");
-                fps = (Integer) m.invoke(MC.getMc());
-            } catch (Exception ex) {
-                try {
-                    for (java.lang.reflect.Method m : MC.getMc().getClass().getMethods()) {
-                        if (m.getReturnType() == int.class && m.getParameterCount() == 0) {
-                            String name = m.getName();
-                            if (name.toLowerCase().contains("fps") || name.toLowerCase().contains("framerate")) {
-                                fps = (Integer) m.invoke(MC.getMc());
-                                break;
-                            }
-                        }
-                    }
-                } catch (Exception ex2) {
-                    fps = 0;
-                }
-            }
+            fps = 0;
         }
         return format.getValue().replace("{Fps}", Integer.toString(fps));
     }
