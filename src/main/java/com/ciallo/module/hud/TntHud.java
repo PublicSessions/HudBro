@@ -92,10 +92,8 @@ public class TntHud extends AbstractHudModule implements Listener3 {
         );
 
         float fov = (float) client.options.fov().get();
-        double guiScale = client.options.guiScale().get();
-        if (guiScale == 0) guiScale = 2.0;
-        int scaledWidth = (int) (client.getWindow().getWidth() / guiScale);
-        int scaledHeight = (int) (client.getWindow().getHeight() / guiScale);
+        int scaledWidth = client.getWindow().getGuiScaledWidth();
+        int scaledHeight = client.getWindow().getGuiScaledHeight();
         float aspect = (float) scaledWidth / (float) scaledHeight;
         Matrix4f projMatrix = new Matrix4f().perspective(
             (float) Math.toRadians(fov),
