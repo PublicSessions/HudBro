@@ -36,6 +36,7 @@ import com.ciallo.module.hud.ReachHud;
 import com.ciallo.module.hud.SpeedHud;
 import com.ciallo.module.hud.TimeHud;
 import com.ciallo.module.hud.TPSHud;
+import com.ciallo.module.hud.TntHud;
 import com.ciallo.module.hud.TotemHud;
 
 public class HudBro implements ClientModInitializer {
@@ -78,6 +79,7 @@ public class HudBro implements ClientModInitializer {
         manager.register(new DamageHud());
         manager.register(new ComboHud());
         manager.register(new ReachHud());
+        manager.register(new TntHud());
 
         HudConfig.load();
 

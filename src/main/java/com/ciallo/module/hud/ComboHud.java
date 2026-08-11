@@ -11,8 +11,6 @@ import com.ciallo.setting.NumberSetting;
 import com.ciallo.setting.TextSetting;
 import com.ciallo.util.MC;
 
-import java.util.ArrayDeque;
-
 public class ComboHud extends AbstractHudModule implements Listener3 {
     private static ComboHud instance;
     private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 6.0, 0.0, 960.0, 1.0, 1.0));
@@ -21,9 +19,10 @@ public class ComboHud extends AbstractHudModule implements Listener3 {
     private final ColorSetting color = (ColorSetting) this.m28(new ColorSetting("Color", -1184275));
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
     private final TextSetting format = (TextSetting) this.m28(new TextSetting("Format", "Combo : {Combo}", "Display format"));
-    private final NumberSetting comboWindow = (NumberSetting) this.m28(new NumberSetting("Combo Window (ms)", 2000.0, 500.0, 10000.0, 100.0));
+    private final NumberSetting comboWindow = (NumberSetting) this.m28(new NumberSetting("Combo Window (ms)", 5000.0, 500.0, 10000.0, 100.0));
 
-    private final ArrayDeque<Long> hits = new ArrayDeque<>();
+    private int comboCount = 0;
+    private long lastHitTime = 0;
     private float lastHealth = -1.0f;
 
     public ComboHud() {
@@ -35,12 +34,14 @@ public class ComboHud extends AbstractHudModule implements Listener3 {
 
     public static void onHit() {
         if (instance == null) return;
-        instance.hits.addLast(System.currentTimeMillis());
+        instance.comboCount++;
+        instance.lastHitTime = System.currentTimeMillis();
     }
 
     public static void resetCombo() {
         if (instance == null) return;
-        instance.hits.clear();
+        instance.comboCount = 0;
+        instance.lastHitTime = 0;
     }
 
     @Override
@@ -76,15 +77,15 @@ public class ComboHud extends AbstractHudModule implements Listener3 {
         if (player != null) {
             float health = player.getHealth();
             if (lastHealth >= 0.0f && health < lastHealth) {
-                hits.clear();
+                resetCombo();
             }
             lastHealth = health;
         }
 
         long now = System.currentTimeMillis();
         long window = (long) comboWindow.getValue();
-        while (!hits.isEmpty() && hits.peekFirst() < now - window) {
-            hits.pollFirst();
+        if (comboCount > 0 && now - lastHitTime > window) {
+            comboCount = 0;
         }
 
         int posX = getX();
@@ -99,6 +100,6 @@ public class ComboHud extends AbstractHudModule implements Listener3 {
     }
 
     private String getText() {
-        return format.getValue().replace("{Combo}", Integer.toString(hits.size()));
+        return format.getValue().replace("{Combo}", Integer.toString(comboCount));
     }
 }

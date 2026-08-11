@@ -17,6 +17,7 @@ public class SpeedHud extends AbstractHudModule implements Listener3 {
     private final BooleanSetting shadow = (BooleanSetting) this.m28(new BooleanSetting("Shadow", true));
     private final ColorSetting color = (ColorSetting) this.m28(new ColorSetting("Color", -1184275));
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
+    private final BooleanSetting useKmh = (BooleanSetting) this.m28(new BooleanSetting("Use km/h", true));
     private final TextSetting format = (TextSetting) this.m28(new TextSetting("Format", "Speed : {Speed}", "Display format"));
 
     private double smoothSpeed = 0.0;
@@ -72,9 +73,9 @@ public class SpeedHud extends AbstractHudModule implements Listener3 {
             if (MC.getMc().player != null) {
                 double dx = MC.getMc().player.getDeltaMovement().x;
                 double dz = MC.getMc().player.getDeltaMovement().z;
-                double instant = Math.sqrt(dx * dx + dz * dz) * 20.0 * 3.6;
-                speed = smoothSpeed * 0.7 + instant * 0.3;
-                smoothSpeed = speed;
+                double raw = Math.sqrt(dx * dx + dz * dz) * 20.0;
+                smoothSpeed = smoothSpeed * 0.7 + raw * 0.3;
+                speed = useKmh.getValue() ? smoothSpeed * 3.6 : smoothSpeed;
             } else {
                 smoothSpeed = 0.0;
                 speed = 0.0;

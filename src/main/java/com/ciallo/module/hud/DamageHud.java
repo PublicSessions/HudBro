@@ -75,6 +75,9 @@ public class DamageHud extends AbstractHudModule implements Listener3 {
         if (lastHealth >= 0.0f && currentHealth < lastHealth) {
             totalDamage += lastHealth - currentHealth;
         }
+        if (currentHealth == 0.0f && lastHealth > 0.0f) {
+            totalDamage = 0.0f;
+        }
         lastHealth = currentHealth;
 
         int posX = getX();
