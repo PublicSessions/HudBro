@@ -165,6 +165,8 @@ public class ColorPickerScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        double mx = event.x();
+        double my = event.y();
         int screenWidth = MC.getMc().getWindow().getGuiScaledWidth();
         int screenHeight = MC.getMc().getWindow().getGuiScaledHeight();
         int x = (screenWidth - WIDTH) / 2;
@@ -177,19 +179,19 @@ public class ColorPickerScreen extends Screen {
             int svHeight = 80;
             int svX = x + PADDING;
             int svY = y + 25;
-            updateSv((int) mouseX, (int) mouseY, svX, svY, svWidth, svHeight);
+            updateSv((int) mx, (int) my, svX, svY, svWidth, svHeight);
             return true;
         }
         if (draggingHue) {
             int hueWidth = WIDTH - PADDING * 2;
             int hueX = x + PADDING;
-            updateHue((int) mouseX, hueX, hueWidth);
+            updateHue((int) mx, hueX, hueWidth);
             return true;
         }
         if (draggingAlpha) {
             int alphaWidth = WIDTH - PADDING * 2;
             int alphaX = x + PADDING;
-            updateAlpha((int) mouseX, alphaX, alphaWidth);
+            updateAlpha((int) mx, alphaX, alphaWidth);
             return true;
         }
         return super.mouseDragged(event, mouseX, mouseY);

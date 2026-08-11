@@ -119,8 +119,8 @@ public class HudSettingsScreen extends Screen {
     private void renderNumberSetting(GuiGraphics context, int panelX, int y, NumberSetting setting, int mouseX, int mouseY, float fadeIn, int idx) {
         int x = panelX + PADDING;
         int width = PANEL_WIDTH - PADDING * 2;
-        int labelWidth = 55;
         int valueWidth = 45;
+        int labelWidth = MC.getMc().font.width(setting.getName()) + 8;
         int barWidth = width - labelWidth - valueWidth - 5;
 
         String displayValue = (typingSettingIdx == idx) ? typingBuffer : String.format("%.1f", setting.getValue());
@@ -228,8 +228,8 @@ public class HudSettingsScreen extends Screen {
         int y = settingsY + settingIdx * SETTING_HEIGHT - scrollOffset;
         int x = panelX + PADDING;
         int width = PANEL_WIDTH - PADDING * 2;
-        int labelWidth = 55;
         int valueWidth = 45;
+        int labelWidth = MC.getMc().font.width(module.getSettings().get(settingIdx).getName()) + 8;
         int barWidth = width - labelWidth - valueWidth - 5;
         int barX = x + labelWidth + 5;
         int barY = y + 10;
@@ -406,11 +406,14 @@ public class HudSettingsScreen extends Screen {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        double mx = event.x();
+        double my = event.y();
+
         if (draggingPanel) {
-            panelOffsetX += (int) (mouseX - panelDragStartX);
-            panelOffsetY += (int) (mouseY - panelDragStartY);
-            panelDragStartX = (int) mouseX;
-            panelDragStartY = (int) mouseY;
+            panelOffsetX += (int) (mx - panelDragStartX);
+            panelOffsetY += (int) (my - panelDragStartY);
+            panelDragStartX = (int) mx;
+            panelDragStartY = (int) my;
             return true;
         }
 
@@ -418,7 +421,7 @@ public class HudSettingsScreen extends Screen {
             int idx = 0;
             for (Setting setting : module.getSettings()) {
                 if (idx == draggingSettingIdx && setting instanceof NumberSetting num) {
-                    applySlider((int) mouseX, num);
+                    applySlider((int) mx, num);
                     return true;
                 }
                 idx++;
@@ -623,8 +626,8 @@ public class HudSettingsScreen extends Screen {
 
         int settingsY = panelY + HEADER_HEIGHT;
         int width = PANEL_WIDTH - PADDING * 2;
-        int labelWidth = 55;
         int valueWidth = 45;
+        int labelWidth = MC.getMc().font.width(setting.getName()) + 8;
         int barWidth = width - labelWidth - valueWidth - 5;
         int barX = panelX + PADDING + labelWidth + 5;
 
