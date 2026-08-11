@@ -535,7 +535,7 @@ public class HudSettingsScreen extends Screen {
             int idx = 0;
             for (Setting setting : module.getSettings()) {
                 if (idx == typingSettingIdx && setting instanceof TextSetting) {
-                    return super.keyPressed(event);
+                    return false;
                 }
                 idx++;
             }

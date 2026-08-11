@@ -3,8 +3,10 @@ package com.ciallo;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.InteractionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.ciallo.command.CommandManager;
@@ -14,6 +16,7 @@ import com.ciallo.gui.HudSettingsScreen;
 import com.ciallo.module.ModuleManager;
 import com.ciallo.module.client.HudEditor;
 import com.ciallo.module.hud.AbstractHudModule;
+import com.ciallo.util.MC;
 import com.ciallo.module.hud.ArmorHud;
 import com.ciallo.module.hud.BrandHud;
 import com.ciallo.module.hud.CoordsHud;
@@ -21,10 +24,15 @@ import com.ciallo.module.hud.FPS;
 import com.ciallo.module.hud.IPHud;
 import com.ciallo.module.hud.InventoryViewer;
 import com.ciallo.module.hud.KeystrokesHud;
+import com.ciallo.module.hud.ComboHud;
+import com.ciallo.module.hud.CpsHud;
+import com.ciallo.module.hud.DamageHud;
+import com.ciallo.module.hud.InGameTime;
 import com.ciallo.module.hud.MovementHud;
 import com.ciallo.module.hud.Ping;
 import com.ciallo.module.hud.PlayerModel;
 import com.ciallo.module.hud.PotionEffectsHud;
+import com.ciallo.module.hud.ReachHud;
 import com.ciallo.module.hud.SpeedHud;
 import com.ciallo.module.hud.TimeHud;
 import com.ciallo.module.hud.TPSHud;
@@ -65,10 +73,25 @@ public class HudBro implements ClientModInitializer {
         manager.register(new KeystrokesHud());
         manager.register(new PotionEffectsHud());
         manager.register(new MovementHud());
+        manager.register(new InGameTime());
+        manager.register(new CpsHud());
+        manager.register(new DamageHud());
+        manager.register(new ComboHud());
+        manager.register(new ReachHud());
 
         HudConfig.load();
 
         CommandManager.registerCommands();
+
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (player == MC.getMc().player && world.isClientSide()) {
+                ReachHud.onAttack(player, entity);
+                if (entity != null) {
+                    ComboHud.onHit();
+                }
+            }
+            return InteractionResult.PASS;
+        });
 
         HudRenderCallback.EVENT.register((context, deltaTracker) -> {
             if (pendingSettingsModule != null) {
