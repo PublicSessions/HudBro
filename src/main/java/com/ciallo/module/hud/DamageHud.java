@@ -21,6 +21,8 @@ public class DamageHud extends AbstractHudModule implements Listener3 {
 
     private float lastHealth = -1.0f;
     private float totalDamage = 0.0f;
+    private long lastDamageTime = 0L;
+    private static final long DAMAGE_RESET_MS = 2000L;
 
     public DamageHud() {
         super("DamageHud", "Shows health and damage taken.", Category.HUD);
@@ -71,14 +73,22 @@ public class DamageHud extends AbstractHudModule implements Listener3 {
         float currentHealth = Math.max(0.0f, MC.getMc().player.getHealth());
         float maxHealth = MC.getMc().player.getMaxHealth();
         float absorption = MC.getMc().player.getAbsorptionAmount();
+        float currentPool = currentHealth + absorption;
 
-        if (lastHealth >= 0.0f && currentHealth < lastHealth) {
-            totalDamage += lastHealth - currentHealth;
+        if (lastHealth >= 0.0f && currentPool < lastHealth) {
+            totalDamage = lastHealth - currentPool;
+            lastDamageTime = System.currentTimeMillis();
         }
         if (currentHealth == 0.0f && lastHealth > 0.0f) {
             totalDamage = 0.0f;
+            lastDamageTime = 0L;
         }
-        lastHealth = currentHealth;
+        if (totalDamage > 0.0f && lastDamageTime != 0L
+                && System.currentTimeMillis() - lastDamageTime > DAMAGE_RESET_MS) {
+            totalDamage = 0.0f;
+            lastDamageTime = 0L;
+        }
+        lastHealth = currentPool;
 
         int posX = getX();
         int posY = getY();

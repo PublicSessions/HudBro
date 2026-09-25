@@ -38,6 +38,7 @@ import com.ciallo.module.hud.TimeHud;
 import com.ciallo.module.hud.TPSHud;
 import com.ciallo.module.hud.TntHud;
 import com.ciallo.module.hud.TotemHud;
+import com.ciallo.module.render.Chams;
 
 public class HudBro implements ClientModInitializer {
     public static final String MOD_ID = "hudbro";
@@ -80,6 +81,7 @@ public class HudBro implements ClientModInitializer {
         manager.register(new ComboHud());
         manager.register(new ReachHud());
         manager.register(new TntHud());
+        manager.register(new Chams());
 
         HudConfig.load();
 
@@ -95,7 +97,7 @@ public class HudBro implements ClientModInitializer {
             return InteractionResult.PASS;
         });
 
-        HudRenderCallback.EVENT.register((context, deltaTracker) -> {
+HudRenderCallback.EVENT.register((context, deltaTracker) -> {
             if (pendingSettingsModule != null) {
                 Minecraft.getInstance().setScreen(new HudSettingsScreen(pendingSettingsModule));
                 pendingSettingsModule = null;
