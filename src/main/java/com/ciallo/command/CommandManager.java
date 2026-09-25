@@ -1,6 +1,5 @@
 package com.ciallo.command;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -14,15 +13,43 @@ import net.minecraft.network.chat.Component;
 import com.ciallo.module.hud.AbstractHudModule;
 import com.ciallo.module.ModuleManager;
 import com.ciallo.gui.HudSettingsScreen;
+import com.ciallo.gui.HudEditorScreen;
+import com.ciallo.gui.HudMainScreen;
 import com.ciallo.HudBro;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * HudBro commands:
+ * <ul>
+ *   <li>{@code /hudbro} - main screen</li>
+ *   <li>{@code /hudbro editor} - HUD editor</li>
+ *   <li>{@code /hudbro settings} - main screen</li>
+ *   <li>{@code /hudbro <module>} - toggle a module (tab completable)</li>
+ *   <li>{@code /hudbro <module> setting} - open that module's settings</li>
+ * </ul>
+ */
 public class CommandManager {
     public static void registerCommands() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(ClientCommandManager.literal("hudbro")
-                .then(ClientCommandManager.argument("module", StringArgumentType.string())
+                .executes(context -> {
+                    Minecraft.getInstance().setScreen(new HudMainScreen());
+                    return 1;
+                })
+                .then(ClientCommandManager.literal("editor")
+                    .executes(context -> {
+                        Minecraft.getInstance().setScreen(new HudEditorScreen());
+                        return 1;
+                    })
+                )
+                .then(ClientCommandManager.literal("settings")
+                    .executes(context -> {
+                        Minecraft.getInstance().setScreen(new HudMainScreen());
+                        return 1;
+                    })
+                )
+                .then(ClientCommandManager.argument("module", StringArgumentType.word())
                     .suggests(HudCommandSuggestionProvider.INSTANCE)
                     .executes(context -> {
                         String moduleName = StringArgumentType.getString(context, "module");
@@ -47,7 +74,8 @@ public class CommandManager {
                                     HudBro.openSettingsScreen(hud);
                                     sendFeedback("Opened settings for " + hud.getName());
                                 } else {
-                                    sendFeedback(module.getName() + " is not a HUD module");
+                                    HudBro.openSettingsScreen(module);
+                                    sendFeedback("Opened settings for " + module.getName());
                                 }
                                 return 1;
                             })
@@ -64,18 +92,24 @@ public class CommandManager {
         }
     }
 
+    /** Suggests module names for the {@code /hudbro <module>} argument. */
     private static class HudCommandSuggestionProvider implements SuggestionProvider<FabricClientCommandSource> {
         public static final HudCommandSuggestionProvider INSTANCE = new HudCommandSuggestionProvider();
 
-        private HudCommandSuggestionProvider() {}
+        private HudCommandSuggestionProvider() {
+        }
 
         @Override
         public CompletableFuture<com.mojang.brigadier.suggestion.Suggestions> getSuggestions(CommandContext<FabricClientCommandSource> context, SuggestionsBuilder builder) {
-            for (AbstractHudModule hud : ModuleManager.INSTANCE.getHudModules()) {
-                builder.suggest(hud.getName());
+            String remaining = builder.getRemainingLowerCase();
+            for (com.ciallo.module.Module module : ModuleManager.INSTANCE.getModules()) {
+                String name = module.getName();
+                String lower = name.toLowerCase();
+                if (remaining.isEmpty() || lower.startsWith(remaining) || lower.contains(remaining)) {
+                    builder.suggest(name);
+                }
             }
             return builder.buildFuture();
         }
     }
 }
-

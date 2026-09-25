@@ -8,6 +8,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import com.ciallo.module.Module;
 import com.ciallo.module.ModuleManager;
+import com.ciallo.setting.EnumSetting;
 import com.ciallo.setting.NumberSetting;
 import com.ciallo.setting.TextSetting;
 import com.ciallo.setting.ColorSetting;
@@ -48,6 +49,8 @@ public class HudConfig {
                         color.setColor(modObj.get(setting.getName()).getAsInt());
                     } else if (setting instanceof BooleanSetting bool) {
                         bool.setValue(modObj.get(setting.getName()).getAsBoolean());
+                    } else if (setting instanceof EnumSetting<?> enumSetting) {
+                        enumSetting.setByName(modObj.get(setting.getName()).getAsString());
                     }
                 }
             }
@@ -70,6 +73,8 @@ public class HudConfig {
                     modObj.addProperty(setting.getName(), color.getColor());
                 } else if (setting instanceof BooleanSetting bool) {
                     modObj.addProperty(setting.getName(), bool.getValue());
+                } else if (setting instanceof EnumSetting<?> enumSetting) {
+                    modObj.addProperty(setting.getName(), enumSetting.getNameValue());
                 }
             }
             root.add(module.getName(), modObj);

@@ -4,6 +4,18 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 	],
+	"client": [
+		"MixinChatComponent",
+		"MixinClientPacketListener",
+		"MixinDeathScreen",
+		"MixinEndCrystalRenderer",
+		"MixinEntityRenderer",
+		"MixinLevelRenderer",
+		"MixinOptions",
+		"MixinPlayerTabOverlay",
+		"MixinPlayerTeam",
+		"MixinSignText"
+	],
 	"injectors": {
 		"defaultRequire": 1
 	},

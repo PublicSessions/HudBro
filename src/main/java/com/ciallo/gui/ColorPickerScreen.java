@@ -15,6 +15,8 @@ import com.ciallo.util.MC;
 
 public class ColorPickerScreen extends Screen {
     private final ColorSetting setting;
+    private final Screen parent;
+    private final Runnable onApply;
     private int currentColor;
     private boolean draggingHue = false;
     private boolean draggingSv = false;
@@ -25,9 +27,32 @@ public class ColorPickerScreen extends Screen {
     private static final int PADDING = 10;
 
     public ColorPickerScreen(ColorSetting setting) {
+        this(setting, null, null);
+    }
+
+    public ColorPickerScreen(ColorSetting setting, Screen parent) {
+        this(setting, parent, null);
+    }
+
+    /**
+     * @param setting colour setting to edit
+     * @param parent  screen to return to on ESC / ENTER
+     * @param onApply extra callback run when the colour is applied
+     */
+    public ColorPickerScreen(ColorSetting setting, Screen parent, Runnable onApply) {
         super(Component.literal("Pick Color"));
         this.setting = setting;
+        this.parent = parent;
+        this.onApply = onApply;
         this.currentColor = setting.getColor();
+    }
+
+    private void apply() {
+        setting.setColor(currentColor);
+        HudConfig.save();
+        if (onApply != null) {
+            onApply.run();
+        }
     }
 
     @Override
@@ -203,8 +228,7 @@ public class ColorPickerScreen extends Screen {
             draggingSv = false;
             draggingHue = false;
             draggingAlpha = false;
-            setting.setColor(currentColor);
-            HudConfig.save();
+            apply();
             return true;
         }
         return super.mouseReleased(event);
@@ -212,14 +236,13 @@ public class ColorPickerScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (event.key() == 256) {
-            Minecraft.getInstance().setScreen(null);
+        if (event.isEscape()) {
+            Minecraft.getInstance().setScreen(parent);
             return true;
         }
-        if (event.key() == 257) {
-            setting.setColor(currentColor);
-            HudConfig.save();
-            Minecraft.getInstance().setScreen(null);
+        if (event.isConfirmation()) {
+            apply();
+            Minecraft.getInstance().setScreen(parent);
             return true;
         }
         return super.keyPressed(event);

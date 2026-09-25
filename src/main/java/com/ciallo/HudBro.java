@@ -1,6 +1,7 @@
 package com.ciallo;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -11,12 +12,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.ciallo.command.CommandManager;
 import com.ciallo.config.HudConfig;
+import com.ciallo.config.GlobalConfig;
 import com.ciallo.gui.HudDragManager;
+import com.ciallo.gui.HudEditorScreen;
+import com.ciallo.gui.HudMainScreen;
 import com.ciallo.gui.HudSettingsScreen;
+import com.ciallo.module.Module;
 import com.ciallo.module.ModuleManager;
 import com.ciallo.module.client.HudEditor;
 import com.ciallo.module.hud.AbstractHudModule;
 import com.ciallo.util.MC;
+import com.ciallo.util.KeyBinds;
 import com.ciallo.module.hud.ArmorHud;
 import com.ciallo.module.hud.BrandHud;
 import com.ciallo.module.hud.CoordsHud;
@@ -37,15 +43,18 @@ import com.ciallo.module.hud.SpeedHud;
 import com.ciallo.module.hud.TimeHud;
 import com.ciallo.module.hud.TPSHud;
 import com.ciallo.module.hud.TntHud;
+import com.ciallo.module.render.Chams;
+import com.ciallo.module.render.Nick;
+import com.ciallo.module.render.PopChams;
 import com.ciallo.module.hud.TotemHud;
 
 public class HudBro implements ClientModInitializer {
     public static final String MOD_ID = "hudbro";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    private static AbstractHudModule pendingSettingsModule = null;
+    private static Module pendingSettingsModule = null;
 
-    public static void openSettingsScreen(AbstractHudModule hud) {
-        pendingSettingsModule = hud;
+    public static void openSettingsScreen(Module module) {
+        pendingSettingsModule = module;
     }
 
     @Override
@@ -57,6 +66,9 @@ public class HudBro implements ClientModInitializer {
         }
 
         ModuleManager manager = ModuleManager.INSTANCE;
+
+        // Register key bindings before the game options are built.
+        KeyBinds.init();
 
         manager.register(new HudEditor());
         manager.register(new TotemHud());
@@ -80,8 +92,12 @@ public class HudBro implements ClientModInitializer {
         manager.register(new ComboHud());
         manager.register(new ReachHud());
         manager.register(new TntHud());
+        manager.register(new Nick());
+        manager.register(new Chams());
+        manager.register(new PopChams());
 
         HudConfig.load();
+        GlobalConfig.load();
 
         CommandManager.registerCommands();
 
@@ -110,7 +126,29 @@ public class HudBro implements ClientModInitializer {
             HudDragManager.getInstance().renderAlignmentLines(context);
         });
 
-        Runtime.getRuntime().addShutdownHook(new Thread(HudConfig::save));
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (Chams.INSTANCE != null && Chams.INSTANCE.isEnabled()) {
+                Chams.INSTANCE.onTick();
+            }
+            if (PopChams.INSTANCE != null) {
+                PopChams.INSTANCE.onTick();
+            }
+            while (KeyBinds.OPEN_MENU.consumeClick()) {
+                if (client.screen == null && client.player != null) {
+                    client.setScreen(new HudMainScreen());
+                }
+            }
+            while (KeyBinds.OPEN_EDITOR.consumeClick()) {
+                if (client.screen == null && client.player != null) {
+                    client.setScreen(new HudEditorScreen());
+                }
+            }
+        });
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            HudConfig.save();
+            GlobalConfig.save();
+        }));
         LOGGER.info("HudBro initialized!");
     }
 }
