@@ -12,8 +12,6 @@ import com.ciallo.setting.NumberSetting;
 import com.ciallo.util.MC;
 
 public class InventoryViewer extends AbstractHudModule implements Listener3 {
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 180.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 6.0, 0.0, 463.0, 1.0, 1.0));
     private final BooleanSetting background = (BooleanSetting) this.m28(new BooleanSetting("Background", true));
     private final BooleanSetting border = (BooleanSetting) this.m28(new BooleanSetting("Border", true));
     private final ColorSetting backgroundColor = (ColorSetting) this.m28(new ColorSetting("BackgroundColor", -2012213224));
@@ -24,16 +22,8 @@ public class InventoryViewer extends AbstractHudModule implements Listener3 {
         super("InventoryViewer", "Shows the main inventory.", Category.HUD);
         this.setChinese("物品栏查看器");
         this.setChineseDescription("查看背包物品");
-    }
-
-    @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
+        this.relX.setValue(0.2);
+        this.relY.setValue(0.01);
     }
 
     @Override
@@ -44,12 +34,6 @@ public class InventoryViewer extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return Math.round(54.0f * scale.getFloat());
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

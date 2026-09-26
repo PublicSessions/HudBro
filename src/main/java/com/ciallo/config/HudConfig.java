@@ -39,6 +39,22 @@ public class HudConfig {
                 if (modObj.has("enabled")) {
                     module.setFlag3(modObj.get("enabled").getAsBoolean());
                 }
+                
+                int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+                int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+                if (screenWidth <= 0) screenWidth = 960;
+                if (screenHeight <= 0) screenHeight = 540;
+                
+                if (modObj.has("X") && modObj.has("Y")) {
+                    double oldX = modObj.get("X").getAsDouble();
+                    double oldY = modObj.get("Y").getAsDouble();
+                    if (modObj.has("RelX") && modObj.has("RelY")) {
+                    } else {
+                        modObj.addProperty("RelX", Math.max(0, Math.min(1, oldX / screenWidth)));
+                        modObj.addProperty("RelY", Math.max(0, Math.min(1, oldY / screenHeight)));
+                    }
+                }
+                
                 for (Setting setting : module.getSettings()) {
                     if (!modObj.has(setting.getName())) continue;
                     if (setting instanceof NumberSetting num) {

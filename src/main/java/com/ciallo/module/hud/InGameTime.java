@@ -11,8 +11,6 @@ import com.ciallo.setting.TextSetting;
 import com.ciallo.util.MC;
 
 public class InGameTime extends AbstractHudModule implements Listener3 {
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 6.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 66.0, 0.0, 463.0, 1.0, 1.0));
     private final BooleanSetting shadow = (BooleanSetting) this.m28(new BooleanSetting("Shadow", true));
     private final ColorSetting color = (ColorSetting) this.m28(new ColorSetting("Color", -1184275));
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
@@ -22,16 +20,8 @@ public class InGameTime extends AbstractHudModule implements Listener3 {
         super("InGameTime", "Shows in-game time.", Category.HUD);
         this.setChinese("游戏内时间");
         this.setChineseDescription("显示 Minecraft 游戏内时间");
-    }
-
-    @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
+        this.relX.setValue(0.01);
+        this.relY.setValue(0.1);
     }
 
     @Override
@@ -42,12 +32,6 @@ public class InGameTime extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return Math.round(MC.getMc().font.lineHeight * scale.getFloat());
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

@@ -11,8 +11,6 @@ import com.ciallo.setting.TextSetting;
 import com.ciallo.util.MC;
 
 public class DamageHud extends AbstractHudModule implements Listener3 {
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 6.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 110.0, 0.0, 463.0, 1.0, 1.0));
     private final BooleanSetting shadow = (BooleanSetting) this.m28(new BooleanSetting("Shadow", true));
     private final ColorSetting color = (ColorSetting) this.m28(new ColorSetting("Color", -1184275));
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
@@ -28,16 +26,8 @@ public class DamageHud extends AbstractHudModule implements Listener3 {
         super("DamageHud", "Shows health and damage taken.", Category.HUD);
         this.setChinese("伤害HUD");
         this.setChineseDescription("显示生命值和受到的伤害");
-    }
-
-    @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
+        this.relX.setValue(0.01);
+        this.relY.setValue(0.15);
     }
 
     @Override
@@ -54,12 +44,6 @@ public class DamageHud extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return Math.round(MC.getMc().font.lineHeight * scale.getFloat());
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

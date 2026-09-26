@@ -11,26 +11,16 @@ import com.ciallo.setting.NumberSetting;
 import com.ciallo.util.MC;
 
 public class ArmorHud extends AbstractHudModule implements Listener3 {
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 6.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 54.0, 0.0, 463.0, 1.0, 1.0));
     public final BooleanSetting shadow = (BooleanSetting) this.m28(new BooleanSetting("Shadow", true));
     public final BooleanSetting durability = (BooleanSetting) this.m28(new BooleanSetting("Durability", true));
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
 
     public ArmorHud() {
         super("ArmorHud", "Shows armor status.", Category.HUD);
-        this.setChinese("??HUD");
-        this.setChineseDescription("???????");
-    }
-
-    @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
+        this.setChinese("装备HUD");
+        this.setChineseDescription("显示装备状态");
+        this.relX.setValue(0.01);
+        this.relY.setValue(0.1);
     }
 
     @Override
@@ -41,12 +31,6 @@ public class ArmorHud extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return Math.round((durability.getValue() ? 28.0f : 16.0f) * scale.getFloat());
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

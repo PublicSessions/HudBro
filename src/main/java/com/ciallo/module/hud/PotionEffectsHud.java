@@ -15,8 +15,6 @@ import com.ciallo.util.MC;
 import java.util.Collection;
 
 public class PotionEffectsHud extends AbstractHudModule implements Listener3 {
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 6.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 30.0, 0.0, 463.0, 1.0, 1.0));
     private final BooleanSetting shadow = (BooleanSetting) this.m28(new BooleanSetting("Shadow", true));
     private final ColorSetting backgroundColor = (ColorSetting) this.m28(new ColorSetting("BackgroundColor", 0xDD000000));
     private final ColorSetting textColor = (ColorSetting) this.m28(new ColorSetting("TextColor", 0xFFFFFFFF));
@@ -27,16 +25,8 @@ public class PotionEffectsHud extends AbstractHudModule implements Listener3 {
         super("PotionEffects", "Shows active potion effects.", Category.HUD);
         this.setChinese("药水效果");
         this.setChineseDescription("显示药水效果");
-    }
-
-    @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
+        this.relX.setValue(0.01);
+        this.relY.setValue(0.3);
     }
 
     @Override
@@ -47,12 +37,6 @@ public class PotionEffectsHud extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return Math.round(MC.getMc().font.lineHeight * scale.getFloat() * 5);
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

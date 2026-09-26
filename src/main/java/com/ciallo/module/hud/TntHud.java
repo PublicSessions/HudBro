@@ -37,8 +37,6 @@ public class TntHud extends AbstractHudModule implements Listener3 {
     }
 
     private static TntHud instance;
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 6.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 126.0, 0.0, 463.0, 1.0, 1.0));
     private final BooleanSetting shadow = (BooleanSetting) this.m28(new BooleanSetting("Shadow", true));
     private final ColorSetting color = (ColorSetting) this.m28(new ColorSetting("Color", -1184275));
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
@@ -55,16 +53,8 @@ public class TntHud extends AbstractHudModule implements Listener3 {
         this.setChinese("TNT计时");
         this.setChineseDescription("显示TNT爆炸倒计时");
         instance = this;
-    }
-
-    @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
+        this.relX.setValue(0.01);
+        this.relY.setValue(0.16);
     }
 
     @Override
@@ -96,12 +86,6 @@ public class TntHud extends AbstractHudModule implements Listener3 {
             return Math.round(8.0f * scale.getFloat());
         }
         return Math.round(MC.getMc().font.lineHeight * scale.getFloat());
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

@@ -407,6 +407,14 @@ public class HudEditorScreen extends Screen {
         }
         newX = Math.max(0, Math.min(screenWidth - w, newX));
         newY = Math.max(0, Math.min(screenHeight - h, newY));
+        
+        int maxX = screenWidth - w;
+        int maxY = screenHeight - h;
+        if (maxX < 0) maxX = 0;
+        if (maxY < 0) maxY = 0;
+        newX = Math.max(0, Math.min(maxX, newX));
+        newY = Math.max(0, Math.min(maxY, newY));
+        
         draggedModule.setPosition(newX, newY);
     }
 

@@ -14,8 +14,6 @@ import com.ciallo.util.MC;
 import org.lwjgl.glfw.GLFW;
 
 public class KeystrokesHud extends AbstractHudModule implements Listener3 {
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 6.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 30.0, 0.0, 463.0, 1.0, 1.0));
     private final BooleanSetting shadow = (BooleanSetting) this.m28(new BooleanSetting("Shadow", true));
     private final ColorSetting backgroundColor = (ColorSetting) this.m28(new ColorSetting("BackgroundColor", 0xFF222222));
     private final ColorSetting pressedColor = (ColorSetting) this.m28(new ColorSetting("PressedColor", 0xFF5555FF));
@@ -36,16 +34,8 @@ public class KeystrokesHud extends AbstractHudModule implements Listener3 {
         this.setFlag3(true);
         this.setChinese("按键显示");
         this.setChineseDescription("显示 WASD、鼠标和空格键的按下状态");
-    }
-
-    @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
+        this.relX.setValue(0.01);
+        this.relY.setValue(0.2);
     }
 
     @Override
@@ -56,12 +46,6 @@ public class KeystrokesHud extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return Math.round(78 * scale.getFloat());
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

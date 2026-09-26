@@ -11,8 +11,6 @@ import com.ciallo.setting.NumberSetting;
 import com.ciallo.util.MC;
 
 public class PlayerModel extends AbstractHudModule implements Listener3 {
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 350.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 112.0, 0.0, 463.0, 1.0, 1.0));
     private final NumberSetting width = (NumberSetting) this.m28(new NumberSetting("Width", 50.0, 30.0, 160.0, 1.0));
     private final NumberSetting height = (NumberSetting) this.m28(new NumberSetting("Height", 80.0, 50.0, 220.0, 1.0));
     private final BooleanSetting emulateYaw = (BooleanSetting) this.m28(new BooleanSetting("EmulateYaw", true));
@@ -26,16 +24,8 @@ public class PlayerModel extends AbstractHudModule implements Listener3 {
         super("PlayerModel", "Shows your player model.", Category.HUD);
         this.setChinese("玩家模型");
         this.setChineseDescription("显示玩家模型");
-    }
-
-    @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
+        this.relX.setValue(0.4);
+        this.relY.setValue(0.25);
     }
 
     @Override
@@ -46,12 +36,6 @@ public class PlayerModel extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return Math.round(height.getFloat() * scale.getFloat());
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

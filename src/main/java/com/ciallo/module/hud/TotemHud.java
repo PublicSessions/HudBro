@@ -12,8 +12,6 @@ import com.ciallo.setting.ColorSetting;
 import com.ciallo.util.MC;
 
 public class TotemHud extends AbstractHudModule implements Listener3 {
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 10.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 10.0, 0.0, 463.0, 1.0, 1.0));
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
     private final ColorSetting color = (ColorSetting) this.m28(new ColorSetting("Color", -1));
 
@@ -21,16 +19,8 @@ public class TotemHud extends AbstractHudModule implements Listener3 {
         super("TotemHud", "Displays totem count.", Category.HUD);
         this.setChinese("图腾HUD");
         this.setChineseDescription("显示图腾数量");
-    }
-
-    @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
+        this.relX.setValue(0.02);
+        this.relY.setValue(0.02);
     }
 
     @Override
@@ -41,12 +31,6 @@ public class TotemHud extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return Math.round(24.0f * scale.getFloat());
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

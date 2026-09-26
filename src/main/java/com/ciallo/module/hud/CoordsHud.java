@@ -11,8 +11,6 @@ import com.ciallo.setting.ColorSetting;
 import com.ciallo.util.MC;
 
 public class CoordsHud extends AbstractHudModule implements Listener3 {
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 10.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 30.0, 0.0, 463.0, 1.0, 1.0));
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
     private final TextSetting format = (TextSetting) this.m28(new TextSetting("Format", "XYZ: {x} / {y} / {z}", "Display format"));
     private final ColorSetting color = (ColorSetting) this.m28(new ColorSetting("Color", -1));
@@ -23,16 +21,8 @@ public class CoordsHud extends AbstractHudModule implements Listener3 {
         super("CoordsHud", "Displays player coordinates.", Category.HUD);
         this.setChinese("坐标HUD");
         this.setChineseDescription("显示玩家坐标");
-    }
-
-    @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
+        this.relX.setValue(0.01);
+        this.relY.setValue(0.05);
     }
 
     @Override
@@ -43,12 +33,6 @@ public class CoordsHud extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return lastHeight;
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

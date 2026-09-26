@@ -13,8 +13,6 @@ import com.ciallo.util.MC;
 
 public class ComboHud extends AbstractHudModule implements Listener3 {
     private static ComboHud instance;
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 6.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 90.0, 0.0, 463.0, 1.0, 1.0));
     private final BooleanSetting shadow = (BooleanSetting) this.m28(new BooleanSetting("Shadow", true));
     private final ColorSetting color = (ColorSetting) this.m28(new ColorSetting("Color", -1184275));
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
@@ -30,6 +28,8 @@ public class ComboHud extends AbstractHudModule implements Listener3 {
         this.setChinese("连击数");
         this.setChineseDescription("显示连击数");
         instance = this;
+        this.relX.setValue(0.01);
+        this.relY.setValue(0.12);
     }
 
     public static void onHit() {
@@ -45,16 +45,6 @@ public class ComboHud extends AbstractHudModule implements Listener3 {
     }
 
     @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
-    }
-
-    @Override
     public int getWidth() {
         String sample = format.getValue().replace("{Combo}", "99");
         return Math.round(MC.getMc().font.width(sample) * scale.getFloat());
@@ -63,12 +53,6 @@ public class ComboHud extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return Math.round(MC.getMc().font.lineHeight * scale.getFloat());
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override

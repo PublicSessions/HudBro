@@ -16,8 +16,6 @@ import com.ciallo.util.MC;
 
 public class ReachHud extends AbstractHudModule implements Listener3 {
     private static ReachHud instance;
-    private final NumberSetting x = (NumberSetting) this.m28(new NumberSetting("X", 6.0, 0.0, 960.0, 1.0, 1.0));
-    private final NumberSetting y = (NumberSetting) this.m28(new NumberSetting("Y", 108.0, 0.0, 463.0, 1.0, 1.0));
     private final BooleanSetting shadow = (BooleanSetting) this.m28(new BooleanSetting("Shadow", true));
     private final ColorSetting color = (ColorSetting) this.m28(new ColorSetting("Color", -1184275));
     private final NumberSetting scale = (NumberSetting) this.m28(new NumberSetting("Scale", 1.0, 0.5, 2.0, 0.1));
@@ -28,9 +26,11 @@ public class ReachHud extends AbstractHudModule implements Listener3 {
 
     public ReachHud() {
         super("Reach", "Shows last hit distance.", Category.HUD);
-        this.setChinese(" Reach");
+        this.setChinese("Reach");
         this.setChineseDescription("显示上次攻击距离");
         instance = this;
+        this.relX.setValue(0.01);
+        this.relY.setValue(0.14);
     }
 
     public static void onAttack(Player player, Entity entity) {
@@ -51,16 +51,6 @@ public class ReachHud extends AbstractHudModule implements Listener3 {
     }
 
     @Override
-    public int getX() {
-        return x.getInt();
-    }
-
-    @Override
-    public int getY() {
-        return y.getInt();
-    }
-
-    @Override
     public int getWidth() {
         return Math.round(MC.getMc().font.width(getText()) * scale.getFloat());
     }
@@ -68,12 +58,6 @@ public class ReachHud extends AbstractHudModule implements Listener3 {
     @Override
     public int getHeight() {
         return Math.round(MC.getMc().font.lineHeight * scale.getFloat());
-    }
-
-    @Override
-    public void setPosition(int x, int y) {
-        this.x.setInt(x);
-        this.y.setInt(y);
     }
 
     @Override
