@@ -5,16 +5,33 @@
 	"mixins": [
 	],
 	"client": [
+		"MixinCameraFreeLook",
 		"MixinChatComponent",
 		"MixinClientPacketListener",
 		"MixinDeathScreen",
 		"MixinEndCrystalRenderer",
+		"MixinEntityFire",
 		"MixinEntityRenderer",
+		"MixinEntityRendererNoRender",
+		"MixinEntityRenderDispatcherNoRender",
+		"MixinGameRendererNoRender",
+		"MixinGuiNoRender",
+		"MixinItemInHandRenderer",
 		"MixinLevelRenderer",
+		"MixinLevelWeather",
+		"MixinLightTextureNoRender",
+		"MixinLivingEntitySwing",
+		"MixinMouseHandlerFreeLook",
 		"MixinOptions",
+		"MixinParrotPet",
+		"MixinParticleEngineNoRender",
 		"MixinPlayerTabOverlay",
 		"MixinPlayerTeam",
-		"MixinSignText"
+		"MixinScreenEffectAccess",
+		"MixinScreenEffectRenderer",
+		"MixinSignText",
+		"MixinToastManager",
+		"MixinTotemParticle"
 	],
 	"injectors": {
 		"defaultRequire": 1

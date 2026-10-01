@@ -339,6 +339,79 @@ java.lang.IllegalStateException: Can only blur once per frame
   原来 `string()` 会当成带引号的字符串处理，TAB 补全会变成 `"CoordsHud"` 这种带引号的形式；
   改成 `word()` 后可以正常补全成 `CoordsHud`，也不需要引号
 - 补全内容改成按已输入前缀过滤（`startsWith` / `contains`），`/hudbro co` → `CoordsHud` / `ComboHud` / `CpsHud`
+
+## 12. 第九轮：移植 orb/（第一批）
+
+`orb/` 是同一个 `dev.lumn` mod 的第二批反编译代码：5 个模块 + 16 个 mixin。构成是
+**12 个 mixin 都在服务 `NoRender`**（34 个「取消渲染」开关），其余是 ViewModel / ParrotPet /
+TotemParticle / FreeLook。
+
+### 已完成（编译 + `runClient` 实测通过）
+
+| 模块 | 新增文件 | 说明 |
+| --- | --- | --- |
+| `TotemParticle` | `module/render/TotemParticle.java`、`mixin/MixinTotemParticle.java` | 图腾粒子颜色（两色随机混合）与 XZ/Y 速度倍率 |
+| `ViewModel` | `module/render/ViewModel.java`、`mixin/MixinItemInHandRenderer.java`、`mixin/MixinLivingEntitySwing.java` | 第一人称手持物品的位置/旋转/缩放、跳过换手抬升动画、挥动速度 |
+
+实现要点：
+- ViewModel 挂 `ItemInHandRenderer#renderItem` 的 HEAD，对 `FIRST_PERSON_RIGHT_HAND` /
+  `FIRST_PERSON_LEFT_HAND` 直接给 `PoseStack` 叠加位移/缩放/旋转；换手动画通过 `@Shadow`
+  该类的 `mainHandHeight` / `offHandHeight` / `mainHandItem` / `offHandItem`（都是本类字段，能正常映射）
+- 挥动速度挂在 `LivingEntity#updateSwingTime` 的 TAIL，把 `attackAnim` 重映射为
+  `attackAnim^(value/6)`（6 = 原版速度，越大越慢）
+
+### 这一批踩到的两个 mixin 规则
+1. **`@Shadow` 不能解析父类成员**：图腾粒子的 `setColor`/`setAlpha`/`xd` 都在
+   `SingleQuadParticle`/`Particle` 里，`@Shadow` 在目标类里找不到 → 运行期
+   `InvalidMixinException ... was not located in the target class`（只有声明在目标类自己的成员才行，
+   例如 `ItemInHandRenderer` 的 `mainHandHeight`、`EndCrystalRenderer` 的 `model`）。
+   改成 **`@ModifyVariable`（改构造参数）+ `@Redirect`（改 `setColor` 调用）**，完全不依赖 shadow。
+2. **构造函数里 `super()` 之前的 handler 必须是 `static`**（和第六轮 `MixinDeathScreen` 同一个坑）。
+
+### 还没做（后续批次）
+
+### 第九轮第二批：`NoRender`（24 个开关，已实测通过）
+
+新增模块 `module/render/NoRender.java` + 8 个 mixin：
+
+| 开关 | 实现位置 |
+| --- | --- |
+| Weather | `Level#getRainLevel/getThunderLevel` → 0（用 `isClientSide()` 限定，避免影响集成服务端） |
+| Title | `ClientPacketListener#setTitleText/setSubtitleText` 取消（加在已有 `MixinClientPacketListener` 里） |
+| EntityFire | `Entity#displayFireAnimation` → false |
+| GuiToast | `ToastManager#render` 取消 |
+| FireOverlay / WaterOverlay | `ScreenEffectRenderer#renderScreenEffect` 里的 `LocalPlayer#isOnFire` / `#isEyeInFluid` 条件 `@Redirect`（关闭时回落到原方法，不会递归） |
+| Potions / XP / Arrows / Eggs / Items | `EntityRenderDispatcher#shouldRender` → false（按实体类判断；1.21.11 投掷物在 `...projectile.throwableitemprojectile` 包） |
+| Guardian / Explosions / CampFire / Fireworks / Effect | `ParticleEngine#createParticle` 按 `ParticleTypes` 取消 |
+| HurtCam | `GameRenderer#bobHurt` 取消 |
+| Totem | `ScreenEffectRenderer#renderItemActivationAnimation` 取消 |
+| BlockOverlay | `@Invoker` 访问私有的 `ScreenEffectRenderer#getViewBlockingState`，隐藏时返回 null |
+| Portal / Nausea / PotionsIcon | `Gui#renderPortalOverlay` / `#renderConfusionOverlay` / `#renderEffects` 取消 |
+| Darkness | `LightTexture#calculateDarknessScale` → 0 |
+| CastShadow | `EntityRenderer#getShadowRadius`（限 `EntityType.ITEM`）→ 0 |
+
+`NoRender` 仍未移植的开关：`ArmorParts`/`ArmorTrim`/`ArmorGlint`（需要改盔甲的渲染状态）、`Fog`
+（1.21.11 已没有 `FogRenderer`，雾按渲染管线设置），以及原理上不合适的
+`LightsUpdate`（光照引擎）、`2DItem`/`RenderSidesOfItems`（物品渲染管线）、
+`PlayerCollision`（渲染状态无 alpha 字段）、`Invisible`（原语义未确认）。
+
+### 第九轮第三批：`ParrotPet` 与 `FreeLook`（已实测通过）
+
+| 模块 | 新增文件 | 实现方式 |
+| --- | --- | --- |
+| `ParrotPet` | `module/render/ParrotPet.java`、`mixin/MixinParrotPet.java` | 注入 `LivingEntityRenderer#submit` 的 TAIL，命中本地玩家（`AvatarRenderState#id`）后按原版 `ParrotOnShoulderLayer` 的写法，用 `ParrotRenderState`（`pose = ON_SHOULDER`）+ `SubmitNodeCollector#submitModel` 提交左右两只鹦鹉，支持变体与缩放 |
+| `FreeLook` | `module/render/FreeLook.java`、`mixin/MixinMouseHandlerFreeLook.java`、`mixin/MixinCameraFreeLook.java` | `@Redirect` `MouseHandler#turnPlayer` 里的 `LocalPlayer#turn` 把鼠标增量喂给模块（身体不转），再在 `Camera#setup` 的 TAIL 用 `setRotation` 把相机转到假视角；`START_CLIENT_TICK` 里更新上一帧值以做插值 |
+
+于是 orb 的 5 个模块 **全部移植完成**：`TotemParticle`、`ViewModel`、`NoRender`（24 个开关）、
+`ParrotPet`、`FreeLook`。
+
+### 还没做（后续批次）
+
+- 上述 `NoRender` 剩余开关（BlockOverlay / Portal / PotionsIcon / Nausea 等）
+- orb mixin 里引用的 `Xray`、`Ambience`、`ShaderModule`、`Crosshair`、`Fov`、`Zoom`、`AspectRatio`、
+  `HighLight`、`SpearModels`、`SpearEnhance`、`Freecam`、`InteractTweaks`、`NoSlow`、`Velocity`、
+  `ElytraFly`、`AntiEffects`、`ClientSetting`、`HUD` 等模块在 HudBro 中都不存在，相关逻辑不移植。
+
 - 根节点已有 `editor` / `settings` 字面量，Brigadier 会自动在 `/hudbro ` 时提示它们
 
 

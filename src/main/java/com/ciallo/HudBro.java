@@ -46,6 +46,11 @@ import com.ciallo.module.hud.TntHud;
 import com.ciallo.module.render.Chams;
 import com.ciallo.module.render.Nick;
 import com.ciallo.module.render.PopChams;
+import com.ciallo.module.render.NoRender;
+import com.ciallo.module.render.ParrotPet;
+import com.ciallo.module.render.FreeLook;
+import com.ciallo.module.render.TotemParticle;
+import com.ciallo.module.render.ViewModel;
 import com.ciallo.module.hud.TotemHud;
 import com.ciallo.module.render.Chams;
 
@@ -96,6 +101,11 @@ public class HudBro implements ClientModInitializer {
         manager.register(new Nick());
         manager.register(new Chams());
         manager.register(new PopChams());
+        manager.register(new ViewModel());
+        manager.register(new TotemParticle());
+        manager.register(new NoRender());
+        manager.register(new ParrotPet());
+        manager.register(new FreeLook());
 
         HudConfig.load();
         GlobalConfig.load();
@@ -125,6 +135,12 @@ public class HudBro implements ClientModInitializer {
             HudDragManager.getInstance().renderHoverHighlight(context);
             HudDragManager.getInstance().update();
             HudDragManager.getInstance().renderAlignmentLines(context);
+        });
+
+        ClientTickEvents.START_CLIENT_TICK.register(client -> {
+            if (FreeLook.INSTANCE != null) {
+                FreeLook.INSTANCE.startTick();
+            }
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

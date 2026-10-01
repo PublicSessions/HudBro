@@ -47,6 +47,12 @@ DamageHud, ComboHud, ReachHud, TntHud.
 - `Chams` — custom end crystal tint / alpha / scale / spin, plus per layer render switches
   (`OuterFrame`, `InnerFrame`, `Core`)
 - `PopChams` — fading copy of a player where their totem popped (your own included)
+- `ViewModel` — first person hand item position / rotation / scale, swap animation and swing speed
+- `NoRender` — 24 render switches (weather, titles, toasts, overlays, particles, entity renders,
+  hurt cam, darkness, item shadows, …)
+- `ParrotPet` — configurable parrots on your shoulders
+- `FreeLook` — look around without turning your body
+- `TotemParticle` — totem pop particle colour and velocity
 
 ## Config
 

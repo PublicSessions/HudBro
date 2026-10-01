@@ -1,10 +1,13 @@
 package com.ciallo.mixin;
 
 import com.ciallo.module.render.Nick;
+import com.ciallo.module.render.NoRender;
 import com.ciallo.module.render.PopChams;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.player.Player;
@@ -17,12 +20,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Nick: rewrites the local player's name in outgoing chat messages.
  * PopChams: detects the "totem of undying used" entity event and starts the pop animation.
+ * NoRender: cancels incoming title / subtitle packets.
  */
 @Mixin(ClientPacketListener.class)
 public class MixinClientPacketListener {
 
     @Unique
     private boolean hudbro$ignoreNextChat = false;
+
+    @Inject(method = "setTitleText", at = @At("HEAD"), cancellable = true)
+    private void hudbro$noTitle(ClientboundSetTitleTextPacket packet, CallbackInfo ci) {
+        NoRender module = NoRender.INSTANCE;
+        if (module != null && module.isAntiTitle()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "setSubtitleText", at = @At("HEAD"), cancellable = true)
+    private void hudbro$noSubtitle(ClientboundSetSubtitleTextPacket packet, CallbackInfo ci) {
+        NoRender module = NoRender.INSTANCE;
+        if (module != null && module.isAntiTitle()) {
+            ci.cancel();
+        }
+    }
 
     @Inject(method = "handleEntityEvent", at = @At("TAIL"))
     private void hudbro$onEntityEvent(ClientboundEntityEventPacket packet, CallbackInfo ci) {
