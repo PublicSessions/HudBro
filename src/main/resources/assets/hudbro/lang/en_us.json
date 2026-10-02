@@ -3,5 +3,8 @@
 	"key.category.hudbro": "HudBro",
 	"key.hudbro.open_menu": "Menu",
 	"key.hudbro.open_editor": "HUD Editor",
-	"key.hudbro.free_look": "Free Look"
+	"key.hudbro.free_look": "Free Look",
+	"key.hudbro.free_look_first": "Free Look (First Person)",
+	"key.hudbro.free_look_second": "Free Look (Third Person Front)",
+	"key.hudbro.free_look_third": "Free Look (Third Person Back)"
 }

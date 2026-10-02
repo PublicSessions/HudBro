@@ -3,6 +3,7 @@ package com.ciallo;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -169,11 +170,20 @@ public class HudBro implements ClientModInitializer {
                     client.setScreen(new HudEditorScreen());
                 }
             }
-            while (KeyBinds.FREE_LOOK.consumeClick()) {
-                if (client.player != null && FreeLook.INSTANCE != null) {
-                    FreeLook.INSTANCE.toggle();
-                    HudConfig.save();
-                }
+            // FreeLook reads the key binds itself, so it must not be drained here.
+            if (FreeLook.INSTANCE != null) {
+                FreeLook.INSTANCE.onTick(client);
+            }
+        });
+
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            if (FreeLook.INSTANCE != null) {
+                FreeLook.INSTANCE.onServerJoined();
+            }
+        });
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            if (FreeLook.INSTANCE != null) {
+                FreeLook.INSTANCE.onServerLeft();
             }
         });
 

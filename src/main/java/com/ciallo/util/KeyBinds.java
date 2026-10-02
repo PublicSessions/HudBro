@@ -29,15 +29,32 @@ public final class KeyBinds {
             CATEGORY
     ));
 
-    /** Toggles FreeLook. Default: unbound, the player picks a key in Options -> Controls. */
-    public static final KeyMapping FREE_LOOK = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-            "key.hudbro.free_look",
-            InputConstants.Type.KEYSYM,
-            InputConstants.UNKNOWN.getValue(),
-            CATEGORY
-    ));
+    /**
+     * Starts FreeLook using the perspective configured in the module settings. Default: unbound, the
+     * player picks a key in Options -> Controls.
+     */
+    public static final KeyMapping FREE_LOOK = unbound("key.hudbro.free_look");
+
+    /** Starts FreeLook directly in first person. Default: unbound. */
+    public static final KeyMapping FREE_LOOK_FIRST_PERSON = unbound("key.hudbro.free_look_first");
+
+    /** Starts FreeLook directly in the front facing third person view. Default: unbound. */
+    public static final KeyMapping FREE_LOOK_SECOND_PERSON = unbound("key.hudbro.free_look_second");
+
+    /** Starts FreeLook directly in the back facing third person view. Default: unbound. */
+    public static final KeyMapping FREE_LOOK_THIRD_PERSON = unbound("key.hudbro.free_look_third");
 
     private KeyBinds() {
+    }
+
+    /** Registers a key that starts out unbound. */
+    private static KeyMapping unbound(String name) {
+        return KeyBindingHelper.registerKeyBinding(new KeyMapping(
+                name,
+                InputConstants.Type.KEYSYM,
+                InputConstants.UNKNOWN.getValue(),
+                CATEGORY
+        ));
     }
 
     /**

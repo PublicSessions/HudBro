@@ -3,5 +3,8 @@
 	"key.category.hudbro": "HudBro",
 	"key.hudbro.open_menu": "总界面",
 	"key.hudbro.open_editor": "HUD 编辑器",
-	"key.hudbro.free_look": "自由视角"
+	"key.hudbro.free_look": "自由视角",
+	"key.hudbro.free_look_first": "自由视角（第一人称）",
+	"key.hudbro.free_look_second": "自由视角（第三人称正面）",
+	"key.hudbro.free_look_third": "自由视角（第三人称背面）"
 }
