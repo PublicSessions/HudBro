@@ -49,9 +49,11 @@ public class ColorPickerScreen extends Screen {
 
     private void apply() {
         setting.setColor(currentColor);
-        HudConfig.save();
         if (onApply != null) {
+            // The owner of the setting decides which config file has to be written.
             onApply.run();
+        } else {
+            HudConfig.save();
         }
     }
 

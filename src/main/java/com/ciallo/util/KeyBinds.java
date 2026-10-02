@@ -29,6 +29,14 @@ public final class KeyBinds {
             CATEGORY
     ));
 
+    /** Toggles FreeLook. Default: unbound, the player picks a key in Options -> Controls. */
+    public static final KeyMapping FREE_LOOK = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+            "key.hudbro.free_look",
+            InputConstants.Type.KEYSYM,
+            InputConstants.UNKNOWN.getValue(),
+            CATEGORY
+    ));
+
     private KeyBinds() {
     }
 

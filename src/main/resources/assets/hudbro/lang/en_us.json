@@ -1,6 +1,7 @@
 {
 	"key.category.hudbro.main": "HudBro",
 	"key.category.hudbro": "HudBro",
-	"key.hudbro.open_menu": "Open HudBro Menu",
-	"key.hudbro.open_editor": "Open HUD Editor"
+	"key.hudbro.open_menu": "Menu",
+	"key.hudbro.open_editor": "HUD Editor",
+	"key.hudbro.free_look": "Free Look"
 }

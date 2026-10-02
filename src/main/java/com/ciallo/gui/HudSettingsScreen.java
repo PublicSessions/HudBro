@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screens.Screen;
 
 
 import net.minecraft.network.chat.Component;
+import com.ciallo.HudBro;
 import com.ciallo.module.Module;
 import com.ciallo.setting.EnumSetting;
 import com.ciallo.setting.NumberSetting;
@@ -498,7 +499,7 @@ public class HudSettingsScreen extends Screen {
                     }
                 } else if (setting instanceof ColorSetting color) {
                     if (isMouseOverColorBox((int) mx, (int) my, idx)) {
-                        Minecraft.getInstance().setScreen(new ColorPickerScreen(color));
+                        Minecraft.getInstance().setScreen(new ColorPickerScreen(color, this, HudConfig::save));
                         return true;
                     }
                 } else if (setting instanceof BooleanSetting bool) {
@@ -613,27 +614,8 @@ public class HudSettingsScreen extends Screen {
             }
 
             if (event.key() == 257) {
-                int idx = 0;
-                for (Setting setting : module.getSettings()) {
-                    if (idx == typingSettingIdx) {
-                        if (setting instanceof NumberSetting num) {
-                            try {
-                                double value = Double.parseDouble(typingBuffer);
-                                num.setValueWithoutClamp(value);
-                                HudConfig.save();
-                            } catch (NumberFormatException e) {
-                            }
-                        } else if (setting instanceof TextSetting text) {
-                            text.setValue(typingBuffer);
-                            HudConfig.save();
-                        }
-                        break;
-                    }
-                    idx++;
-                }
-                typingSettingIdx = -1;
-                typingBuffer = "";
-                cursorPosition = 0;
+                commitTypedValue();
+                HudConfig.save();
                 return true;
             }
 
@@ -738,6 +720,43 @@ public class HudSettingsScreen extends Screen {
             return true;
         }
         return super.charTyped(event);
+    }
+
+    @Override
+    public void removed() {
+        // Leaving the screen must not throw away a value that was typed but not confirmed.
+        commitTypedValue();
+        HudConfig.save();
+        super.removed();
+    }
+
+    /** Applies the value being typed to its setting and clears the input state. */
+    private void commitTypedValue() {
+        int typed = typingSettingIdx;
+        String typedText = typingBuffer;
+        typingSettingIdx = -1;
+        typingBuffer = "";
+        cursorPosition = 0;
+        if (typed < 0) {
+            return;
+        }
+        int idx = 0;
+        for (Setting setting : module.getSettings()) {
+            if (idx == typed) {
+                if (setting instanceof NumberSetting num) {
+                    try {
+                        // Clamped, so an out of range value cannot come back clamped on the next launch.
+                        num.setValue(Double.parseDouble(typedText));
+                    } catch (NumberFormatException e) {
+                        HudBro.LOGGER.warn("Ignoring the typed value \"{}\" for {}", typedText, setting.getName());
+                    }
+                } else if (setting instanceof TextSetting text) {
+                    text.setValue(typedText);
+                }
+                return;
+            }
+            idx++;
+        }
     }
 
     private long getWindowHandle() {

@@ -184,7 +184,7 @@ public class HudMainScreen extends Screen {
             // Theme colour swatch
             int boxX = x + PANEL_WIDTH - PADDING - 46;
             if (isHovered(mouseX, mouseY, boxX, y + HEADER_HEIGHT + 4, 46, 14)) {
-                Minecraft.getInstance().setScreen(new ColorPickerScreen(GlobalConfig.themeColor, this));
+                Minecraft.getInstance().setScreen(new ColorPickerScreen(GlobalConfig.themeColor, this, GlobalConfig::save));
                 return true;
             }
 

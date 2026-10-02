@@ -12,6 +12,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.network.chat.Component;
 import com.ciallo.module.hud.AbstractHudModule;
 import com.ciallo.module.ModuleManager;
+import com.ciallo.config.HudConfig;
 import com.ciallo.gui.HudSettingsScreen;
 import com.ciallo.gui.HudEditorScreen;
 import com.ciallo.gui.HudMainScreen;
@@ -59,6 +60,7 @@ public class CommandManager {
                             return 0;
                         }
                         module.toggle();
+                        HudConfig.save();
                         sendFeedback(module.getName() + " toggled: " + (module.isEnabled() ? "ON" : "OFF"));
                         return 1;
                     })

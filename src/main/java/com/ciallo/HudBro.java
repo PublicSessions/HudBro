@@ -1,6 +1,7 @@
 package com.ciallo;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -19,6 +20,7 @@ import com.ciallo.gui.HudMainScreen;
 import com.ciallo.gui.HudSettingsScreen;
 import com.ciallo.module.Module;
 import com.ciallo.module.ModuleManager;
+import com.ciallo.module.ModuleScanner;
 import com.ciallo.module.client.HudEditor;
 import com.ciallo.module.hud.AbstractHudModule;
 import com.ciallo.util.MC;
@@ -107,10 +109,17 @@ public class HudBro implements ClientModInitializer {
         manager.register(new ParrotPet());
         manager.register(new FreeLook());
 
+        // Picks up every module class that is not registered above, so newly added HUDs appear in the
+        // editor without touching this file. Has to run before the configs are read.
+        ModuleScanner.discover(manager);
+
         HudConfig.load();
         GlobalConfig.load();
 
         CommandManager.registerCommands();
+
+        // Fires on every normal way out of the game, including the window close button.
+        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> saveConfigs());
 
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (player == MC.getMc().player && world.isClientSide()) {
@@ -160,13 +169,25 @@ public class HudBro implements ClientModInitializer {
                     client.setScreen(new HudEditorScreen());
                 }
             }
+            while (KeyBinds.FREE_LOOK.consumeClick()) {
+                if (client.player != null && FreeLook.INSTANCE != null) {
+                    FreeLook.INSTANCE.toggle();
+                    HudConfig.save();
+                }
+            }
         });
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            HudConfig.save();
-            GlobalConfig.save();
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> saveConfigs(), "hudbro-config-save"));
         LOGGER.info("HudBro initialized!");
+    }
+
+    /**
+     * Writes both config files. Called while the client shuts down and from a JVM shutdown hook, so a
+     * config is stored on every way out of the game.
+     */
+    public static void saveConfigs() {
+        HudConfig.save();
+        GlobalConfig.save();
     }
 }
 
